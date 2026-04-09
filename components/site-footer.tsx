@@ -1,3 +1,4 @@
+import Image from 'next/image';
 import Link from 'next/link';
 
 const FOOTER_LINKS = [
@@ -12,7 +13,7 @@ export default function SiteFooter() {
     <footer className='bg-white px-5 py-12 md:px-12 md:py-14 lg:px-48'>
       <div className='flex flex-col gap-8 md:flex-row md:items-end md:justify-between'>
         <div>
-          <p className='text-xl font-black text-dark md:text-2xl'>kriuu.</p>
+          <Image src='/logo.svg' alt='kriuu' width={32} height={32} />
           <p className='mt-2 text-xs uppercase tracking-widest text-dark/40'>
             &copy; 2026 Kriuu. Engineered in Latam.
           </p>
