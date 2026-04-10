@@ -1,7 +1,9 @@
 import SiteHeader from '@/components/site-header';
 import Hero from '@/components/hero';
-import Manifiesto from '@/components/manifiesto';
-import Ecosistema from '@/components/ecosistema';
+import QueEsKriuu from '@/components/what-is-kriuu';
+import Manifiesto from '@/components/manifesto';
+import LoQueHacemos from '@/components/what-we-do';
+import Directory from '@/components/directory';
 import JoinCta from '@/components/join-cta';
 import SiteFooter from '@/components/site-footer';
 
@@ -10,8 +12,10 @@ export default function Home() {
     <main className='font-sans'>
       <SiteHeader />
       <Hero />
+      <QueEsKriuu />
       <Manifiesto />
-      <Ecosistema />
+      <LoQueHacemos />
+      <Directory />
       <JoinCta />
       <SiteFooter />
     </main>
