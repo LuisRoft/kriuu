@@ -45,7 +45,13 @@
   --foreground: oklch(0.145 0 0);
 }
 
+@keyframes marquee {
+  from { transform: translateX(0); }
+  to   { transform: translateX(-50%); }
+}
+
 @theme inline {
+  --animate-marquee: marquee 28s linear infinite;
   --color-electric: var(--kriuu-electric);
   --color-energy: var(--kriuu-energy);
   --color-lime: var(--kriuu-lime);

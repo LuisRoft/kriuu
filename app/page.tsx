@@ -1,5 +1,6 @@
 import SiteHeader from '@/components/site-header';
 import Hero from '@/components/hero';
+import Marquee from '@/components/marquee';
 import QueEsKriuu from '@/components/what-is-kriuu';
 import Manifiesto from '@/components/manifesto';
 import LoQueHacemos from '@/components/what-we-do';
@@ -12,6 +13,7 @@ export default function Home() {
     <main className='font-sans'>
       <SiteHeader />
       <Hero />
+      <Marquee />
       <QueEsKriuu />
       <Manifiesto />
       <LoQueHacemos />
