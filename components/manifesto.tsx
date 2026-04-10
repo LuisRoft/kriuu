@@ -1,19 +1,16 @@
 export default function ManifiestoSection() {
   return (
-    <section
-      id='manifiesto'
-      className='bg-dark py-[120px]'
-    >
-      <div className='mx-auto max-w-[1280px] px-5 md:px-8'>
-        <div className='mx-auto max-w-[760px]'>
+    <section id='manifiesto' className='bg-dark py-16 md:py-30'>
+      <div className='mx-auto max-w-7xl px-5 md:px-8'>
+        <div className='mx-auto max-w-190'>
           <p className='text-xs font-medium uppercase tracking-widest text-cream/40'>
             Manifiesto
           </p>
           <div className='mt-12 space-y-6 text-[17px] leading-[1.7] text-cream/80'>
             <p>
               Siempre hay un centro donde todo parece pasar y un resto que
-              construye igual, sin el spotlight, sin los recursos, sin la red. No
-              por falta de talento. Simplemente porque nadie había armado el
+              construye igual, sin el spotlight, sin los recursos, sin la red.
+              No por falta de talento. Simplemente porque nadie había armado el
               espacio todavía.
             </p>
             <p>

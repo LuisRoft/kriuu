@@ -1,5 +1,5 @@
 import type { Metadata } from 'next';
-import { Geist, Space_Grotesk, Geist_Mono } from 'next/font/google';
+import { Geist, Space_Grotesk } from 'next/font/google';
 import './globals.css';
 import { cn } from '@/lib/utils';
 
@@ -13,10 +13,6 @@ const geist = Geist({
   variable: '--font-display',
 });
 
-const geistMono = Geist_Mono({
-  variable: '--font-geist-mono',
-  subsets: ['latin'],
-});
 
 export const metadata: Metadata = {
   title: 'kriuu.',
@@ -30,7 +26,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang='es' className={cn('scroll-smooth font-sans', spaceGrotesk.variable)}>
-      <body className={`${geist.variable} ${geistMono.variable} antialiased`}>
+      <body className={`${geist.variable} antialiased`}>
         {children}
       </body>
     </html>

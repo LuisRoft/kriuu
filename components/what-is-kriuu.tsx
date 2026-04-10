@@ -2,10 +2,10 @@ export default function QueEsKriuu() {
   return (
     <section
       id='que-es'
-      className='border-t border-dark/[0.08] bg-cream py-[120px]'
+      className='border-t border-dark/8 bg-cream py-16 md:py-30'
     >
-      <div className='mx-auto max-w-[1280px] px-5 md:px-8'>
-        <div className='mx-auto max-w-[760px]'>
+      <div className='mx-auto max-w-7xl px-5 md:px-8'>
+        <div className='mx-auto max-w-190'>
           <p className='text-xs font-medium uppercase tracking-widest text-dark/50'>
             ¿Qué es Kriuu?
           </p>
