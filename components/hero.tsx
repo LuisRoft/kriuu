@@ -1,7 +1,7 @@
 'use client';
 
 import Image from 'next/image';
-import heroIllustration from '@/public/bgs/hero-illustration.jpg';
+import heroIllustration from '@/public/bgs/hero-illustration.webp';
 import Link from 'next/link';
 import { Button } from '@/components/ui/button';
 import { ArrowRight } from 'lucide-react';
@@ -125,7 +125,6 @@ export default function Hero() {
         </div>
       </div>
 
-      <div className='pointer-events-none absolute inset-x-0 bottom-0 z-10 h-32 bg-linear-to-b from-transparent to-cream md:h-48' />
     </section>
   );
 }
