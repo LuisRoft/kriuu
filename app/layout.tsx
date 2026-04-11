@@ -1,5 +1,7 @@
 import type { Metadata } from 'next';
+import { Analytics } from '@vercel/analytics/next';
 import { Geist, Space_Grotesk } from 'next/font/google';
+
 import './globals.css';
 import { cn } from '@/lib/utils';
 
@@ -13,7 +15,6 @@ const geist = Geist({
   variable: '--font-display',
 });
 
-
 const siteUrl =
   process.env.NEXT_PUBLIC_SITE_URL ??
   (process.env.VERCEL_PROJECT_PRODUCTION_URL
@@ -22,11 +23,13 @@ const siteUrl =
 
 export const metadata: Metadata = {
   title: 'kriuu.',
-  description: 'La crew de engineers, designers y founders construyendo desde Latam.',
+  description:
+    'La crew de engineers, designers y founders construyendo desde Latam.',
   metadataBase: new URL(siteUrl),
   openGraph: {
     title: 'kriuu.',
-    description: 'La crew de engineers, designers y founders construyendo desde Latam.',
+    description:
+      'La crew de engineers, designers y founders construyendo desde Latam.',
     url: siteUrl,
     siteName: 'kriuu.',
     images: [
@@ -43,7 +46,8 @@ export const metadata: Metadata = {
   twitter: {
     card: 'summary_large_image',
     title: 'kriuu.',
-    description: 'La crew de engineers, designers y founders construyendo desde Latam.',
+    description:
+      'La crew de engineers, designers y founders construyendo desde Latam.',
     images: ['/api/og'],
   },
 };
@@ -54,9 +58,13 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang='es' className={cn('scroll-smooth font-sans', spaceGrotesk.variable)}>
+    <html
+      lang='es'
+      className={cn('scroll-smooth font-sans', spaceGrotesk.variable)}
+    >
       <body className={`${geist.variable} antialiased`}>
         {children}
+        <Analytics />
       </body>
     </html>
   );
