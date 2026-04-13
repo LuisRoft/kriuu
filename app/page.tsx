@@ -13,6 +13,7 @@ export default function Home() {
     <main className='font-sans'>
       <SiteHeader />
       <Hero />
+      <Marquee />
       <QueEsKriuu />
       <Manifiesto />
       <LoQueHacemos />
