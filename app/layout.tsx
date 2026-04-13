@@ -1,5 +1,4 @@
 import type { Metadata } from 'next';
-import { Analytics } from '@vercel/analytics/next';
 import { Geist, Space_Grotesk } from 'next/font/google';
 
 import './globals.css';
@@ -64,7 +63,6 @@ export default function RootLayout({
     >
       <body className={`${geist.variable} antialiased`}>
         {children}
-        <Analytics />
       </body>
     </html>
   );
