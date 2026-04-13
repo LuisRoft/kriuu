@@ -16,10 +16,14 @@ export default function JoinCta() {
         fill
         sizes='100vw'
         placeholder='blur'
-        className='pointer-events-none object-cover brightness-50'
+        className='pointer-events-none object-cover'
+      />
+      <div
+        aria-hidden='true'
+        className='absolute inset-0 bg-dark/48 md:bg-dark/40'
       />
 
-      <div className='relative z-10 mx-auto w-full max-w-310 bg-dark/80 px-8 py-14 text-center backdrop-blur-sm md:px-14 md:py-16'>
+      <div className='relative z-10 mx-auto w-full max-w-310 bg-dark/88 px-8 py-14 text-center md:bg-dark/80 md:backdrop-blur-sm md:px-14 md:py-16'>
         <div className='space-y-5 text-[17px] leading-[1.7] text-cream'>
           <p>
             Kriuu funciona en la medida en que la gente participa, propone y se

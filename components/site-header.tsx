@@ -15,7 +15,7 @@ export default function SiteHeader() {
   const [open, setOpen] = useState(false);
 
   return (
-    <header className='fixed left-0 right-0 top-0 z-999 border-b border-dark/10 bg-cream/90 backdrop-blur-md'>
+    <header className='fixed left-0 right-0 top-0 z-999 border-b border-dark/10 bg-cream/96 md:bg-cream/90 md:backdrop-blur-md'>
       <div className='mx-auto flex h-20 max-w-7xl items-center justify-between px-5 md:px-8'>
         {/* Logo */}
         <Link href='#' className='flex shrink-0 items-center gap-2'>
@@ -58,7 +58,7 @@ export default function SiteHeader() {
 
       {/* Mobile dropdown */}
       {open && (
-        <nav className='border-t border-dark/8 bg-cream/95 backdrop-blur-md md:hidden'>
+        <nav className='border-t border-dark/8 bg-cream/98 md:hidden'>
           <div className='mx-auto max-w-[1280px] px-5 py-2'>
             {NAV_LINKS.map(({ href, label }) => (
               <Link

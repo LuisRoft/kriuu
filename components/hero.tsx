@@ -6,7 +6,7 @@ import { ArrowRight } from 'lucide-react';
 
 export default function Hero() {
   return (
-    <section className='relative h-screen w-full overflow-hidden'>
+    <section className='relative min-h-screen min-h-[100svh] w-full overflow-hidden'>
       <Image
         src={heroIllustration}
         alt=''
