@@ -24,36 +24,49 @@ export default function Directory() {
         </div>
 
         {/* Desktop — grilla */}
-        <div className='mt-16 hidden grid-cols-3 gap-4 md:grid lg:grid-cols-4'>
+        <div className='mt-16 hidden grid-cols-2 gap-4 md:grid lg:grid-cols-3'>
           {MEMBERS.map(({ name, role, desc, photo, linkedin }) => (
             <article
               key={name}
-              className='flex flex-col border border-dark/8 bg-cream'
+              className='flex flex-col border border-dark/8 bg-cream p-5'
             >
-              <MemberPhoto src={photo} name={name} className='aspect-square' />
-              <div className='flex flex-col gap-1 p-4'>
-                <p className='text-sm font-semibold text-dark'>{name}</p>
-                {role && (
-                  <p className='text-[11px] font-medium uppercase tracking-wider text-dark/50'>
-                    {role}
-                  </p>
-                )}
-                {desc && (
-                  <p className='mt-1.5 text-xs leading-relaxed text-dark/60'>
-                    {desc}
-                  </p>
-                )}
-                {linkedin && (
+              {/* Top row: foto + nombre/título */}
+              <div className='flex items-start gap-4'>
+                <MemberPhoto
+                  src={photo}
+                  name={name}
+                  className='aspect-square w-24 flex-shrink-0'
+                />
+                <div className='min-w-0 pt-1'>
+                  <p className='text-sm font-semibold text-dark'>{name}</p>
+                  {role && (
+                    <p className='mt-0.5 text-[11px] font-medium uppercase tracking-wider text-dark/50'>
+                      {role}
+                    </p>
+                  )}
+                </div>
+              </div>
+
+              {/* Descripción */}
+              {desc && (
+                <p className='mt-4 text-xs leading-relaxed text-dark/60'>
+                  {desc}
+                </p>
+              )}
+
+              {/* Redes sociales — bottom right */}
+              {linkedin && (
+                <div className='mt-4 flex flex-1 items-end justify-end'>
                   <Link
                     href={linkedin}
                     target='_blank'
                     rel='noopener noreferrer'
-                    className='mt-2 text-[11px] font-medium text-dark/40 transition-colors hover:text-dark'
+                    className='text-[11px] font-medium text-dark/40 transition-colors hover:text-dark'
                   >
                     LinkedIn ↗
                   </Link>
-                )}
-              </div>
+                </div>
+              )}
             </article>
           ))}
         </div>

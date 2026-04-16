@@ -15,10 +15,11 @@ export const MEMBERS: Member[] = [
     linkedin: 'https://www.linkedin.com/in/luisvelasco27/',
   },
   {
-    name: 'Johannes Carofilis',
-    role: 'QA Engineer',
-    photo: undefined,
-    linkedin: undefined,
+    name: 'Johannes Carofilis Veliz',
+    role: 'Software Engineer | QA | AI & Tech Community Builder',
+    desc: 'Ingeniero en Software (PUCE Manabí) con experiencia en desarrollo fullstack, QA y liderazgo tecnológico. Campus Director de Hult Prize y fundador de comunidades de desarrollo en Manabí. Combina tecnología, filosofía y emprendimiento con foco en IA, ética tecnológica e impacto social.',
+    photo: '/members/johannes-carofilis.png',
+    linkedin: 'https://www.linkedin.com/in/johannes-carofilis-a38b49288/',
   },
   {
     name: 'Byron Serrano',

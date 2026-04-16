@@ -34,7 +34,7 @@ export default function MobileDeck() {
         </div>
       </div>
 
-      <div className='relative mx-auto w-full max-w-sm' style={{ height: 400 }}>
+      <div className='relative mx-auto w-full max-w-sm'>
         {MEMBERS.map(({ name, role, desc, photo, linkedin }, i) => {
           const pos = i - idx;
           const visible = pos >= 0 && pos <= 2;
@@ -42,34 +42,50 @@ export default function MobileDeck() {
           return (
             <div
               key={name}
-              className='absolute inset-x-0 top-0 border border-dark/8 bg-cream transition-all duration-300'
+              className='inset-x-0 top-0 border border-dark/8 bg-cream transition-all duration-300'
               style={{
+                position: pos === 0 ? 'relative' : 'absolute',
                 transform: `translateY(${Math.min(pos, 2) * 10}px) scale(${1 - Math.min(Math.max(pos, 0), 2) * 0.03})`,
                 zIndex: MEMBERS.length - i,
                 opacity: visible ? 1 : 0,
                 pointerEvents: pos === 0 ? 'auto' : 'none',
               }}
             >
-              <MemberPhoto src={photo} name={name} className='h-48' />
               <div className='p-5'>
-                <p className='text-[15px] font-semibold text-dark'>{name}</p>
-                {role && (
-                  <p className='mt-0.5 text-xs font-medium uppercase tracking-wider text-dark/50'>
-                    {role}
-                  </p>
-                )}
+                {/* Top row: foto + nombre/título */}
+                <div className='flex items-start gap-4'>
+                  <MemberPhoto
+                    src={photo}
+                    name={name}
+                    className='aspect-square w-24 flex-shrink-0'
+                  />
+                  <div className='min-w-0 pt-1'>
+                    <p className='text-[15px] font-semibold text-dark'>{name}</p>
+                    {role && (
+                      <p className='mt-0.5 text-xs font-medium uppercase tracking-wider text-dark/50'>
+                        {role}
+                      </p>
+                    )}
+                  </div>
+                </div>
+
+                {/* Descripción */}
                 {desc && (
-                  <p className='mt-2 text-sm leading-relaxed text-dark/60'>{desc}</p>
+                  <p className='mt-4 text-sm leading-relaxed text-dark/60'>{desc}</p>
                 )}
+
+                {/* Redes sociales — bottom right */}
                 {linkedin && (
-                  <Link
-                    href={linkedin}
-                    target='_blank'
-                    rel='noopener noreferrer'
-                    className='mt-3 inline-block text-[11px] font-medium text-dark/40 transition-colors hover:text-dark'
-                  >
-                    LinkedIn ↗
-                  </Link>
+                  <div className='mt-4 flex justify-end'>
+                    <Link
+                      href={linkedin}
+                      target='_blank'
+                      rel='noopener noreferrer'
+                      className='text-[11px] font-medium text-dark/40 transition-colors hover:text-dark'
+                    >
+                      LinkedIn ↗
+                    </Link>
+                  </div>
                 )}
               </div>
             </div>
