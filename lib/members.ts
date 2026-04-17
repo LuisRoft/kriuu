@@ -30,8 +30,9 @@ export const MEMBERS: Member[] = [
   },
   {
     name: 'Byron Serrano',
-    role: 'Software Engineer',
-    photo: undefined,
+    role: 'Software Engineer / Full Stack Developer',
+    desc: 'Desarrollador Full Stack con una marcada predilección por la Ingeniería de Datos, mi diferencial técnico actual se centra en la Inteligencia Artificial, no solo consumo modelos, los integro.',
+    photo: '/members/byron-serrano.webp',
     linkedin: undefined,
   },
   {
