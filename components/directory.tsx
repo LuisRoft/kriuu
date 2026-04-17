@@ -6,13 +6,13 @@ import { MEMBERS } from '@/lib/members';
 export default function Directory() {
   return (
     <section
-      id='directory'
+      id='team'
       className='border-t border-dark/8 bg-cream py-16 md:py-30'
     >
       <div className='mx-auto max-w-7xl px-5 md:px-8'>
         <div className='mx-auto max-w-190'>
           <p className='text-xs font-medium uppercase tracking-widest text-dark/50'>
-            Directory
+            Team
           </p>
           <div className='mt-10 space-y-4 text-[17px] leading-[1.7] text-dark'>
             <p>
@@ -35,7 +35,7 @@ export default function Directory() {
                 <MemberPhoto
                   src={photo}
                   name={name}
-                  className='aspect-square w-24 flex-shrink-0'
+                  className='aspect-square w-24 shrink-0'
                 />
                 <div className='min-w-0 pt-1'>
                   <p className='text-sm font-semibold text-dark'>{name}</p>

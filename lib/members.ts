@@ -22,6 +22,13 @@ export const MEMBERS: Member[] = [
     linkedin: 'https://www.linkedin.com/in/johannes-carofilis-a38b49288/',
   },
   {
+    name: 'Andrea Campaña',
+    role: 'Estudiante de Software',
+    desc: 'Estudiante de Software en la PUCE Manabí, orientada al desarrollo frontend con enfoque en UI/UX. Integro ilustración digital y conceptual en la creación de experiencias con identidad, comprometida con el desarrollo de soluciones con impacto social y enfoque humano. Siempre dispuesta a contar una historia.',
+    photo: '/members/andrea-campana.png',
+    linkedin: undefined,
+  },
+  {
     name: 'Byron Serrano',
     role: 'Software Engineer',
     photo: undefined,
@@ -30,12 +37,6 @@ export const MEMBERS: Member[] = [
   {
     name: 'Stiven Guanoquiza',
     role: 'Frontend Engineer',
-    photo: undefined,
-    linkedin: undefined,
-  },
-  {
-    name: 'Andrea Campaña',
-    role: 'Estudiante de Software',
     photo: undefined,
     linkedin: undefined,
   },

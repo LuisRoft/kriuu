@@ -4,6 +4,7 @@ import Marquee from '@/components/marquee';
 import QueEsKriuu from '@/components/what-is-kriuu';
 import Manifiesto from '@/components/manifesto';
 import LoQueHacemos from '@/components/what-we-do';
+import Moments from '@/components/moments';
 import Directory from '@/components/directory';
 import JoinCta from '@/components/join-cta';
 import SiteFooter from '@/components/site-footer';
@@ -17,6 +18,7 @@ export default function Home() {
       <QueEsKriuu />
       <Manifiesto />
       <LoQueHacemos />
+      <Moments />
       <Directory />
       <JoinCta />
       <SiteFooter />
