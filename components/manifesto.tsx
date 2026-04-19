@@ -1,8 +1,14 @@
 'use client';
 
 import { Button } from '@/components/ui/button';
+import {
+  Drawer,
+  DrawerClose,
+  DrawerContent,
+  DrawerTitle,
+} from '@/components/ui/drawer';
 import { ArrowLeft, ArrowRight } from 'lucide-react';
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 
 const PREVIEW_ITEMS = [
   {
@@ -74,25 +80,6 @@ const MANIFESTO_SECTIONS = [
 export default function ManifiestoSection() {
   const [isOpen, setIsOpen] = useState(false);
 
-  useEffect(() => {
-    if (!isOpen) return;
-
-    const onKeyDown = (event: KeyboardEvent) => {
-      if (event.key === 'Escape') {
-        setIsOpen(false);
-      }
-    };
-
-    const { overflow } = document.body.style;
-    document.body.style.overflow = 'hidden';
-    window.addEventListener('keydown', onKeyDown);
-
-    return () => {
-      document.body.style.overflow = overflow;
-      window.removeEventListener('keydown', onKeyDown);
-    };
-  }, [isOpen]);
-
   return (
     <>
       <section id='manifiesto' className='bg-dark py-16 md:py-30'>
@@ -108,7 +95,9 @@ export default function ManifiestoSection() {
                   <span className='w-10 shrink-0 font-mono text-[11px] text-cream/30 md:w-12'>
                     [{n}]
                   </span>
-                  <p className='text-[17px] leading-[1.7] text-cream/80'>{text}</p>
+                  <p className='text-[17px] leading-[1.7] text-cream/80'>
+                    {text}
+                  </p>
                 </div>
               ))}
             </div>
@@ -132,60 +121,49 @@ export default function ManifiestoSection() {
         </div>
       </section>
 
-      <div
-        aria-hidden={!isOpen}
-        className={`fixed inset-0 z-[1000] transition-[visibility] duration-500 ${isOpen ? 'visible' : 'invisible'}`}
-      >
-        <button
-          type='button'
-          aria-label='Cerrar manifiesto'
-          onClick={() => setIsOpen(false)}
-          className={`absolute inset-0 bg-dark/45 backdrop-blur-[2px] transition-opacity duration-500 ${isOpen ? 'opacity-100' : 'opacity-0'} `}
-        />
-
-        <aside
-          role='dialog'
-          aria-modal='true'
-          aria-labelledby='manifesto-title'
-          className={`absolute inset-y-0 right-0 flex w-full max-w-[100vw] flex-col border-l border-cream/10 bg-dark text-cream shadow-2xl transition-transform duration-500 ease-[cubic-bezier(.22,1,.36,1)] md:max-w-[82vw] xl:max-w-[72vw] ${isOpen ? 'translate-x-0' : 'translate-x-full'}`}
+      <Drawer open={isOpen} onOpenChange={setIsOpen} direction='right'>
+        <DrawerContent
+          overlayClassName='bg-dark/45 backdrop-blur-[2px]'
+          className='z-1000 flex h-full flex-col border-cream/10 bg-dark text-cream
+                     data-[vaul-drawer-direction=right]:w-full
+                     data-[vaul-drawer-direction=right]:sm:max-w-[82vw]
+                     data-[vaul-drawer-direction=right]:xl:max-w-[50vw]'
         >
+          {/* Header */}
           <div className='flex items-center justify-between border-b border-cream/8 px-4 py-4 md:px-8 md:py-5'>
-            <button
-              type='button'
-              onClick={() => setIsOpen(false)}
-              className='inline-flex min-h-11 items-center gap-3 rounded-full border border-cream/12 px-4 text-sm font-medium text-cream/88 transition-colors hover:border-cream/25 hover:text-cream'
-            >
+            <DrawerClose className='inline-flex min-h-11 items-center gap-3 border border-cream/12 px-4 text-sm font-medium text-cream/88 transition-colors hover:border-cream/25 hover:text-cream'>
               <ArrowLeft className='size-4' />
               <span>Volver</span>
-            </button>
+            </DrawerClose>
 
             <div className='text-right'>
               <p className='text-[10px] font-medium uppercase tracking-[0.28em] text-cream/38'>
                 Manifiesto fundacional
               </p>
-              <p className='mt-1 text-xs text-cream/55'>Manabí, Ecuador · 6 de marzo de 2026</p>
+              <p className='mt-1 text-xs text-cream/55'>
+                Manabí, Ecuador · 6 de marzo de 2026
+              </p>
             </div>
           </div>
 
+          {/* Scrollable content */}
           <div className='flex-1 overflow-y-auto'>
             <div className='mx-auto max-w-5xl px-5 py-8 md:px-8 md:py-12'>
               <div className='max-w-4xl'>
                 <p className='text-xs font-medium uppercase tracking-widest text-cream/40'>
                   Kriuu
                 </p>
-                <h2
-                  id='manifesto-title'
-                  className='mt-4 text-4xl leading-none font-medium tracking-tight text-cream sm:text-5xl md:text-6xl'
-                >
+                <DrawerTitle className='mt-4 text-4xl font-medium leading-none tracking-tight text-cream sm:text-5xl md:text-6xl'>
                   Una comunidad para construir.
-                </h2>
+                </DrawerTitle>
                 <p className='mt-8 max-w-3xl text-base leading-[1.9] text-cream/78 md:text-lg'>
-                  Kriuu nació en búsqueda de llenar un vacío en nuestra provincia,
-                  un lugar para aprender, compartir y convivir. Nace en Manabí por
-                  miembros que trabajan con tecnología, que estudian, que
-                  experimentan, y que en algún momento se dieron cuenta de que no
-                  había un lugar donde juntarse con otros que estuvieran haciendo lo
-                  mismo. No un evento de una noche o de una semana. Una comunidad.
+                  Kriuu nació en búsqueda de llenar un vacío en nuestra
+                  provincia, un lugar para aprender, compartir y convivir. Nace
+                  en Manabí por miembros que trabajan con tecnología, que
+                  estudian, que experimentan, y que en algún momento se dieron
+                  cuenta de que no había un lugar donde juntarse con otros que
+                  estuvieran haciendo lo mismo. No un evento de una noche o de
+                  una semana. Una comunidad.
                 </p>
               </div>
 
@@ -196,7 +174,9 @@ export default function ManifiestoSection() {
                     className='grid gap-5 border-t border-cream/8 pt-8 md:grid-cols-[84px_minmax(0,1fr)] md:gap-8 md:pt-10'
                   >
                     <div className='flex items-center gap-3 md:block'>
-                      <span className='font-mono text-[11px] text-cream/35'>[{id}]</span>
+                      <span className='font-mono text-[11px] text-cream/35'>
+                        [{id}]
+                      </span>
                       <h3 className='text-lg font-medium text-cream md:mt-3 md:text-xl'>
                         {title}
                       </h3>
@@ -208,7 +188,7 @@ export default function ManifiestoSection() {
                       ))}
                       {quote ? (
                         <p className='border-l border-l-lime/60 pl-4 text-lg italic text-cream md:pl-6 md:text-xl'>
-                          “{quote}”
+                          &ldquo;{quote}&rdquo;
                         </p>
                       ) : null}
                     </div>
@@ -223,8 +203,8 @@ export default function ManifiestoSection() {
               </div>
             </div>
           </div>
-        </aside>
-      </div>
+        </DrawerContent>
+      </Drawer>
     </>
   );
 }
