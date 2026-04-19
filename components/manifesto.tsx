@@ -65,7 +65,7 @@ const MANIFESTO_SECTIONS = [
     id: 'V',
     title: 'A quién va dirigido esto',
     paragraphs: [
-      'A cualquier persona que tenga curiosidad por la tecnología, la creación o el proceso de construir cosas, sin importar de dónde son o qué estudia. A estudiantes y a profesionales. A los que llevan años en esto y a los que están empezando.',
+      'A cualquier persona que tenga curiosidad por la tecnología, la creación o el proceso de construir cosas, sin importar de dónde sea o qué estudie. A estudiantes y a profesionales. A los que llevan años en esto y a los que están empezando.',
       'A los que tienen un proyecto en mente y no saben por dónde empezar, y a los que ya tienen algo funcionando y quieren mostrárselo a alguien. Si te interesa aprender, compartir o simplemente ver qué están haciendo otros, hay lugar para ti aquí.',
     ],
   },
