@@ -1,6 +1,7 @@
 'use client';
 
-import { ArrowLeft } from 'lucide-react';
+import { Button } from '@/components/ui/button';
+import { ArrowLeft, ArrowRight } from 'lucide-react';
 import { useEffect, useState } from 'react';
 
 const PREVIEW_ITEMS = [
@@ -117,16 +118,15 @@ export default function ManifiestoSection() {
                 Kriuu es de quienes la construyen.
               </p>
 
-              <button
+              <Button
                 type='button'
                 onClick={() => setIsOpen(true)}
-                className='group inline-flex min-h-12 items-center gap-3 self-start rounded-full border border-cream/15 bg-cream/6 px-5 text-sm font-medium text-cream transition-all duration-300 hover:border-cream/35 hover:bg-cream/12'
+                className='group/button h-auto self-start gap-2 px-5 py-3 text-sm font-semibold md:px-7 md:py-3.5'
+                size='lg'
               >
-                <span>Leer manifiesto completo</span>
-                <span className='font-mono text-[11px] text-cream/55 transition-transform duration-300 group-hover:translate-x-1'>
-                  [Abrir]
-                </span>
-              </button>
+                Leer manifiesto completo
+                <ArrowRight className='size-4 transition-transform duration-200 group-hover/button:translate-x-1' />
+              </Button>
             </div>
           </div>
         </div>
