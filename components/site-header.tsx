@@ -2,9 +2,9 @@
 
 import Image from 'next/image';
 import Link from 'next/link';
-import { Button } from '@/components/ui/button';
 import { Menu, X } from 'lucide-react';
 import { useState } from 'react';
+import JoinButton from '@/components/join-button';
 
 const NAV_LINKS = [
   { href: '#manifiesto', label: 'Manifiesto' },
@@ -40,9 +40,9 @@ export default function SiteHeader() {
 
         {/* Right side */}
         <div className='flex items-center gap-2'>
-          <Button className='h-auto min-h-11 px-4 text-sm' asChild>
-            <Link href='#join'>Únete</Link>
-          </Button>
+          <JoinButton className='min-h-11 px-4 text-sm' iconClassName='hidden' size='default'>
+            Únete
+          </JoinButton>
 
           {/* Hamburger — mobile only */}
           <button

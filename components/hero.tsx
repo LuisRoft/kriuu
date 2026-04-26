@@ -1,8 +1,6 @@
 import Image from 'next/image';
 import heroIllustration from '@/public/bgs/hero-illustration.webp';
-import Link from 'next/link';
-import { Button } from '@/components/ui/button';
-import { ArrowRight } from 'lucide-react';
+import JoinButton from '@/components/join-button';
 
 export default function Hero() {
   return (
@@ -32,20 +30,11 @@ export default function Hero() {
         </p>
 
         <div className='flex flex-col gap-3'>
-          <Button
-            className='group/button h-auto w-fit gap-2 px-5 py-3 text-sm font-semibold md:px-8 md:py-4 md:text-lg'
+          <JoinButton
+            className='w-fit px-5 py-3 text-sm md:px-8 md:py-4 md:text-lg'
+            iconClassName='size-4 md:size-5'
             size='lg'
-            asChild
-          >
-            <Link
-              href='https://chat.whatsapp.com/CizNIkE9F5Y5L66E24KJD6?mode=gi_t'
-              target='_blank'
-              rel='noopener noreferrer'
-            >
-              Únete a la kriuu
-              <ArrowRight className='size-4 transition-transform duration-200 group-hover/button:translate-x-1 md:size-5' />
-            </Link>
-          </Button>
+          />
           <p className='text-xs text-dark/60 md:text-sm'>
             Nació en Manabí, Ecuador. Es para todos.
           </p>

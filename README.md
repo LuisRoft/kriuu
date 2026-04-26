@@ -1,36 +1,52 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Kriuu
 
-## Getting Started
+Sitio web de Kriuu construido con Next.js.
 
-First, run the development server:
+## Desarrollo
+
+Instala dependencias y levanta el servidor local:
 
 ```bash
-npm run dev
-# or
-yarn dev
-# or
+pnpm install
 pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Abre `http://localhost:3000`.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## Variables De Entorno
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+Crea un archivo `.env.local` en la raíz del proyecto:
 
-## Learn More
+```bash
+NEXT_PUBLIC_KRIUU_APPS_SCRIPT_URL=https://script.google.com/macros/s/YOUR_DEPLOYMENT_ID/exec
+NEXT_PUBLIC_KRIUU_FORM_TOKEN=YOUR_FORM_TOKEN
+```
 
-To learn more about Next.js, take a look at the following resources:
+Estas variables usan `NEXT_PUBLIC_` porque el formulario de inscripción corre en el navegador. Son valores de configuración públicos, no secretos reales.
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+## Inscripciones Con Google Sheets
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+El formulario de inscripción vive en `components/join-provider.tsx` y envía los datos a un Web App de Google Apps Script.
 
-## Deploy on Vercel
+Configuración:
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+1. Crea o abre tu Google Sheet.
+2. Ve a `Extensiones > Apps Script`.
+3. Pega el contenido de `google-apps-script-signups.js`.
+4. En el script, actualiza:
+   - `SHEET_ID`
+   - `SHEET_NAME`
+   - `SECRET_TOKEN`
+5. Despliégalo como Web App:
+   - `Ejecutar como`: `Yo`
+   - `Quién tiene acceso`: `Cualquier usuario`
+6. Copia la URL terminada en `/exec` y configúrala en `.env.local`.
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+El script incluye validación del lado de Apps Script, honeypot, token simple y bloqueo de correos duplicados.
+
+## Comandos
+
+```bash
+pnpm lint
+pnpm build
+```

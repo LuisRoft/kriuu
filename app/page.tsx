@@ -8,20 +8,23 @@ import Moments from '@/components/moments';
 import Directory from '@/components/directory';
 import JoinCta from '@/components/join-cta';
 import SiteFooter from '@/components/site-footer';
+import JoinProvider from '@/components/join-provider';
 
 export default function Home() {
   return (
-    <main className='font-sans'>
-      <SiteHeader />
-      <Hero />
-      <Marquee />
-      <QueEsKriuu />
-      <Manifiesto />
-      <LoQueHacemos />
-      <Moments />
-      <Directory />
-      <JoinCta />
-      <SiteFooter />
-    </main>
+    <JoinProvider>
+      <main className='font-sans'>
+        <SiteHeader />
+        <Hero />
+        <Marquee />
+        <QueEsKriuu />
+        <Manifiesto />
+        <LoQueHacemos />
+        <Moments />
+        <Directory />
+        <JoinCta />
+        <SiteFooter />
+      </main>
+    </JoinProvider>
   );
 }
