@@ -40,6 +40,10 @@ function doPost(e) {
       }
     }
 
+    if (data.acepta !== true) {
+      return jsonResponse(false, 'Consent is required.');
+    }
+
     if (!isValidEmail(data.correo)) {
       return jsonResponse(false, 'Invalid email address.');
     }
@@ -57,43 +61,53 @@ function doPost(e) {
       return jsonResponse(false, 'Please specify the referral source.');
     }
 
-    const sheet = SpreadsheetApp.openById(SHEET_ID).getSheetByName(SHEET_NAME);
+    const lock = LockService.getScriptLock();
 
-    if (!sheet) {
-      return jsonResponse(false, 'Target sheet was not found.');
+    if (!lock.tryLock(10000)) {
+      return jsonResponse(false, 'The server is busy. Please try again.');
     }
 
-    const lastRow = sheet.getLastRow();
+    try {
+      const sheet = SpreadsheetApp.openById(SHEET_ID).getSheetByName(SHEET_NAME);
 
-    if (lastRow > 1) {
-      const emails = sheet
-        .getRange(2, 8, lastRow - 1, 1)
-        .getValues()
-        .flat()
-        .map((email) => String(email).toLowerCase().trim());
-
-      if (emails.includes(String(data.correo).toLowerCase().trim())) {
-        return jsonResponse(false, 'This email is already registered.');
+      if (!sheet) {
+        return jsonResponse(false, 'Target sheet was not found.');
       }
-    }
 
-    sheet.appendRow([
-      new Date(),
-      clean(data.nombres),
-      clean(data.apellidos),
-      age,
-      clean(data.genero),
-      clean(data.ciudad),
-      clean(data.parroquia),
-      clean(data.correo).toLowerCase(),
-      clean(data.telefono),
-      clean(data.situacion),
-      clean(data.carrera),
-      data.intereses.map(clean).join(', '),
-      clean(data.referido),
-      clean(data.otroMedio || data.referidoDetalle || ''),
-      data.acepta === true ? 'Yes' : 'No',
-    ]);
+      const lastRow = sheet.getLastRow();
+
+      if (lastRow > 1) {
+        const emails = sheet
+          .getRange(2, 8, lastRow - 1, 1)
+          .getValues()
+          .flat()
+          .map((email) => String(email).toLowerCase().trim());
+
+        if (emails.includes(String(data.correo).toLowerCase().trim())) {
+          return jsonResponse(false, 'This email is already registered.');
+        }
+      }
+
+      sheet.appendRow([
+        new Date(),
+        clean(data.nombres),
+        clean(data.apellidos),
+        age,
+        clean(data.genero),
+        clean(data.ciudad),
+        clean(data.parroquia),
+        clean(data.correo).toLowerCase(),
+        clean(data.telefono),
+        clean(data.situacion),
+        clean(data.carrera),
+        data.intereses.map(clean).join(', '),
+        clean(data.referido),
+        clean(data.otroMedio || data.referidoDetalle || ''),
+        'Yes',
+      ]);
+    } finally {
+      lock.releaseLock();
+    }
 
     return jsonResponse(true, 'Signup saved successfully.');
   } catch (error) {

@@ -4,10 +4,13 @@ import Link from 'next/link';
 import {
   createContext,
   type FormEvent,
+  type KeyboardEvent as ReactKeyboardEvent,
   type ReactNode,
+  useCallback,
   useContext,
   useEffect,
   useMemo,
+  useRef,
   useState,
 } from 'react';
 import { ArrowLeft, ArrowRight, ExternalLink } from 'lucide-react';
@@ -97,32 +100,78 @@ export default function JoinProvider({ children }: { children: ReactNode }) {
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [status, setStatus] = useState<'idle' | 'sending' | 'success' | 'error'>('idle');
   const [message, setMessage] = useState('');
+  const dialogRef = useRef<HTMLElement | null>(null);
+  const initialFocusRef = useRef<HTMLButtonElement | null>(null);
+  const previousFocusRef = useRef<HTMLElement | null>(null);
+
+  const closeJoinForm = useCallback(() => {
+    setIsOpen(false);
+  }, []);
 
   useEffect(() => {
     if (!isOpen) return;
 
-    const onKeyDown = (event: KeyboardEvent) => {
+    const onKeyDown = (event: globalThis.KeyboardEvent) => {
       if (event.key === 'Escape') {
-        setIsOpen(false);
+        closeJoinForm();
       }
     };
 
     const { overflow } = document.body.style;
     document.body.style.overflow = 'hidden';
     window.addEventListener('keydown', onKeyDown);
+    window.setTimeout(() => {
+      initialFocusRef.current?.focus();
+    }, 0);
 
     return () => {
       document.body.style.overflow = overflow;
       window.removeEventListener('keydown', onKeyDown);
+      previousFocusRef.current?.focus();
     };
-  }, [isOpen]);
+  }, [closeJoinForm, isOpen]);
 
   const value = useMemo(
     () => ({
-      openJoinForm: () => setIsOpen(true),
+      openJoinForm: () => {
+        previousFocusRef.current =
+          document.activeElement instanceof HTMLElement ? document.activeElement : null;
+        setIsOpen(true);
+      },
     }),
     [],
   );
+
+  function trapDialogFocus(event: ReactKeyboardEvent<HTMLElement>) {
+    if (event.key !== 'Tab') return;
+
+    const focusableElements = dialogRef.current?.querySelectorAll<HTMLElement>(
+      [
+        'a[href]',
+        'button:not([disabled])',
+        'textarea:not([disabled])',
+        'input:not([disabled]):not([type="hidden"])',
+        'select:not([disabled])',
+        '[tabindex]:not([tabindex="-1"])',
+      ].join(','),
+    );
+
+    if (!focusableElements?.length) return;
+
+    const firstElement = focusableElements[0];
+    const lastElement = focusableElements[focusableElements.length - 1];
+
+    if (event.shiftKey && document.activeElement === firstElement) {
+      event.preventDefault();
+      lastElement.focus();
+      return;
+    }
+
+    if (!event.shiftKey && document.activeElement === lastElement) {
+      event.preventDefault();
+      firstElement.focus();
+    }
+  }
 
   function updateField(name: keyof FormState, value: string | boolean | string[]) {
     setForm((current) => ({ ...current, [name]: value }));
@@ -151,8 +200,8 @@ export default function JoinProvider({ children }: { children: ReactNode }) {
       nextErrors.edad = 'Ingresa tu edad.';
     } else {
       const age = Number(form.edad);
-      if (!Number.isInteger(age) || age < 12) {
-        nextErrors.edad = 'Ingresa una edad válida desde 12 años.';
+      if (!Number.isInteger(age) || age < 12 || age > 80) {
+        nextErrors.edad = 'Ingresa una edad válida desde 12 hasta 80 años.';
       }
     }
     if (!form.genero) nextErrors.genero = 'Selecciona una opción.';
@@ -205,7 +254,9 @@ export default function JoinProvider({ children }: { children: ReactNode }) {
     };
 
     try {
-      if (APPS_SCRIPT_URL.includes('script.google.com')) {
+      const usesAppsScript = APPS_SCRIPT_URL.includes('script.google.com');
+
+      if (usesAppsScript) {
         await fetch(APPS_SCRIPT_URL, {
           method: 'POST',
           mode: 'no-cors',
@@ -230,7 +281,9 @@ export default function JoinProvider({ children }: { children: ReactNode }) {
       }
 
       setStatus('success');
-      setForm(INITIAL_FORM);
+      if (!usesAppsScript) {
+        setForm(INITIAL_FORM);
+      }
     } catch (error) {
       setStatus('error');
       setMessage(error instanceof Error ? error.message : 'No se pudo guardar la inscripción.');
@@ -248,21 +301,24 @@ export default function JoinProvider({ children }: { children: ReactNode }) {
         <button
           type='button'
           aria-label='Cerrar formulario de inscripción'
-          onClick={() => setIsOpen(false)}
+          onClick={closeJoinForm}
           className={`absolute inset-0 bg-dark/45 backdrop-blur-[2px] transition-opacity duration-500 ${isOpen ? 'opacity-100' : 'opacity-0'}`}
         />
 
         <aside
+          ref={dialogRef}
           role='dialog'
           aria-modal='true'
           aria-labelledby='join-title'
+          onKeyDown={trapDialogFocus}
           className={`absolute inset-y-0 right-0 flex w-full max-w-[100vw] flex-col border-l border-dark/10 bg-cream text-dark shadow-2xl transition-transform duration-500 ease-[cubic-bezier(.22,1,.36,1)] md:max-w-[760px] ${isOpen ? 'translate-x-0' : 'translate-x-full'}`}
         >
           <div className='flex items-center justify-between border-b border-dark/10 px-4 py-4 md:px-8 md:py-5'>
             <button
+              ref={initialFocusRef}
               type='button'
-              onClick={() => setIsOpen(false)}
-              className='inline-flex min-h-11 items-center gap-3 rounded-full border border-dark/12 px-4 text-sm font-medium text-dark/78 transition-colors hover:border-dark/25 hover:text-dark'
+              onClick={closeJoinForm}
+              className='inline-flex min-h-11 items-center gap-3 rounded-none border border-dark/12 px-4 text-sm font-medium text-dark/78 transition-colors hover:border-dark/25 hover:text-dark'
             >
               <ArrowLeft className='size-4' />
               <span>Volver</span>
@@ -272,7 +328,7 @@ export default function JoinProvider({ children }: { children: ReactNode }) {
               href={WHATSAPP_URL}
               target='_blank'
               rel='noopener noreferrer'
-              className='inline-flex min-h-11 items-center gap-2 rounded-full bg-olive px-4 text-sm font-semibold text-white transition-opacity hover:opacity-90'
+              className='inline-flex min-h-11 items-center gap-2 rounded-none bg-olive px-4 text-sm font-semibold text-white transition-opacity hover:opacity-90'
             >
               WhatsApp
               <ExternalLink className='size-4' />
@@ -287,16 +343,16 @@ export default function JoinProvider({ children }: { children: ReactNode }) {
                     *
                   </div>
                   <h2 className='mt-6 font-display text-4xl font-semibold leading-none tracking-tight text-dark'>
-                    Inscripción guardada.
+                    Solicitud enviada.
                   </h2>
                   <p className='mt-4 text-base leading-7 text-dark/68'>
-                    Ya tenemos tus datos. También puedes entrar al grupo de WhatsApp desde el botón de arriba.
+                    Si tus datos pasan las validaciones, tu inscripción quedará registrada. También puedes entrar al grupo de WhatsApp desde el botón de arriba.
                   </p>
                   <Button
                     type='button'
                     onClick={() => {
                       setStatus('idle');
-                      setIsOpen(false);
+                      closeJoinForm();
                     }}
                     className='mt-8 h-auto px-6 py-3'
                   >
@@ -411,7 +467,7 @@ export default function JoinProvider({ children }: { children: ReactNode }) {
 
                     <section className='space-y-4 border-t border-dark/10 pt-6'>
                       <h3 className='font-display text-xl font-semibold'>Formación e intereses</h3>
-                      <Field label='Situación actual' error={errors.situacion}>
+                      <GroupField label='Situación actual' error={errors.situacion}>
                         <div className='grid gap-2 md:grid-cols-3'>
                           {SITUATIONS.map((value) => (
                             <Choice
@@ -422,7 +478,7 @@ export default function JoinProvider({ children }: { children: ReactNode }) {
                             />
                           ))}
                         </div>
-                      </Field>
+                      </GroupField>
                       <Field label='Carrera o profesión' error={errors.carrera}>
                         <input
                           className={fieldClass}
@@ -431,7 +487,7 @@ export default function JoinProvider({ children }: { children: ReactNode }) {
                           placeholder='Diseño, software, marketing...'
                         />
                       </Field>
-                      <Field label='Áreas de interés' error={errors.intereses}>
+                      <GroupField label='Áreas de interés' error={errors.intereses}>
                         <div className='grid gap-2 md:grid-cols-2'>
                           {INTERESTS.map((value) => (
                             <Choice
@@ -442,12 +498,12 @@ export default function JoinProvider({ children }: { children: ReactNode }) {
                             />
                           ))}
                         </div>
-                      </Field>
+                      </GroupField>
                     </section>
 
                     <section className='space-y-4 border-t border-dark/10 pt-6'>
                       <h3 className='font-display text-xl font-semibold'>Comunidad</h3>
-                      <Field label='¿Cómo nos conociste?' error={errors.referido}>
+                      <GroupField label='¿Cómo nos conociste?' error={errors.referido}>
                         <div className='grid gap-2 md:grid-cols-2'>
                           {[
                             'Un amigo / conocido',
@@ -467,7 +523,7 @@ export default function JoinProvider({ children }: { children: ReactNode }) {
                             />
                           ))}
                         </div>
-                      </Field>
+                      </GroupField>
                       {form.referido === 'Otro medio' ? (
                         <Field label='¿Cuál?' error={errors.otroMedio}>
                           <input
@@ -482,7 +538,7 @@ export default function JoinProvider({ children }: { children: ReactNode }) {
                         <button
                           type='button'
                           onClick={() => updateField('acepta', !form.acepta)}
-                          className={`flex w-full items-start gap-3 rounded-md border p-4 text-left text-sm leading-6 transition-colors ${
+                          className={`flex w-full items-start gap-3 rounded-none border p-4 text-left text-sm leading-6 transition-colors ${
                             form.acepta
                               ? 'border-olive bg-olive/8 text-dark'
                               : 'border-dark/12 bg-white/35 text-dark/72'
@@ -518,7 +574,7 @@ export default function JoinProvider({ children }: { children: ReactNode }) {
                         href={WHATSAPP_URL}
                         target='_blank'
                         rel='noopener noreferrer'
-                        className='inline-flex min-h-11 items-center justify-center gap-2 rounded-full border border-dark/12 px-5 text-sm font-semibold text-dark/78 transition-colors hover:border-dark/25 hover:text-dark'
+                        className='inline-flex min-h-11 items-center justify-center gap-2 rounded-none border border-dark/12 px-5 text-sm font-semibold text-dark/78 transition-colors hover:border-dark/25 hover:text-dark'
                       >
                         Entrar a WhatsApp
                         <ExternalLink className='size-4' />
@@ -553,6 +609,24 @@ function Field({
   );
 }
 
+function GroupField({
+  children,
+  error,
+  label,
+}: {
+  children: ReactNode;
+  error?: string;
+  label: string;
+}) {
+  return (
+    <fieldset className='flex flex-col gap-2'>
+      <legend className={labelClass}>{label}</legend>
+      {children}
+      {error ? <span className={errorClass}>{error}</span> : null}
+    </fieldset>
+  );
+}
+
 function Choice({
   checked,
   label,
@@ -566,7 +640,7 @@ function Choice({
     <button
       type='button'
       onClick={onClick}
-      className={`min-h-11 rounded-md border px-3 py-2 text-left text-sm font-medium transition-colors ${
+      className={`min-h-11 rounded-none border px-3 py-2 text-left text-sm font-medium transition-colors ${
         checked
           ? 'border-olive bg-olive/10 text-olive'
           : 'border-dark/10 bg-white/35 text-dark/70 hover:border-dark/20 hover:text-dark'
