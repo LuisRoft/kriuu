@@ -32,7 +32,7 @@ const INTERESTS = [
 ] as const;
 
 const SITUATIONS = [
-  'Estudia una carrera',
+  'Estudia una carrera', 'No estudia ni trabaja',
   'Trabajando',
   'Estudia y trabaja',
   'Graduado',
