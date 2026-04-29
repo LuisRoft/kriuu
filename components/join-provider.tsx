@@ -36,6 +36,7 @@ const SITUATIONS = [
   'Trabajando',
   'Estudia y trabaja',
   'Graduado',
+  'Graduado y trabajando'
 ] as const;
 
 type JoinContextValue = {
