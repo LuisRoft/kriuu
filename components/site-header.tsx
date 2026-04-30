@@ -8,6 +8,7 @@ import JoinButton from '@/components/join-button';
 
 const NAV_LINKS = [
   { href: '#manifiesto', label: 'Manifiesto' },
+  { href: '#codigo-de-conducta', label: 'Código' },
   { href: '#team', label: 'Team' },
 ] as const;
 
