@@ -408,16 +408,16 @@ export function JoinFormDrawer({ open, onOpenChange }: JoinFormDrawerProps) {
                         render={({ field, fieldState }) => (
                           <Field data-invalid={fieldState.invalid}>
                             <FieldLabel
-                              htmlFor='join-provincia'
+                              htmlFor='join-parroquia'
                               className={legendLabelClass}
                             >
-                              Provincia
+                              Parroquia / sector
                             </FieldLabel>
                             <Input
                               {...field}
-                              id='join-provincia'
+                              id='join-parroquia'
                               className={inputClassName}
-                              placeholder='Ej. Manabí'
+                              placeholder='Andrés de Vera'
                               aria-invalid={fieldState.invalid}
                             />
                             {fieldState.invalid ? (

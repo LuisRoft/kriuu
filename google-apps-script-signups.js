@@ -10,7 +10,7 @@ const HEADERS = [
   'Edad',
   'Género',
   'Ciudad',
-  'Provincia',
+  'Parroquia / sector',
   'Correo',
   'Teléfono / WhatsApp',
   'Situación actual',

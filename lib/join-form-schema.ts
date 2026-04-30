@@ -59,7 +59,7 @@ export const joinFormSchema = z
       .min(1, 'Selecciona una opción.')
       .refine(isIn(JOIN_GENDER_OPTIONS), 'Selecciona una opción.'),
     ciudad: z.string().trim().min(1, 'Ingresa tu ciudad.'),
-    parroquia: z.string().trim().min(1, 'Ingresa tu provincia.'),
+    parroquia: z.string().trim().min(1, 'Ingresa tu parroquia o sector.'),
     correo: z.string().trim().min(1, 'Ingresa un correo válido.').email('Ingresa un correo válido.'),
     telefono: z.string().trim().min(1, 'Ingresa tu teléfono.'),
     situacion: z
