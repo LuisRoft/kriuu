@@ -1,8 +1,26 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 
-const SHEET_ID = 'YOUR_GOOGLE_SHEET_ID';
-const SHEET_NAME = 'Sheet1';
-const SECRET_TOKEN = 'YOUR_FORM_TOKEN';
+const SHEET_ID = '1ad4uXgRf4sY1cUiu8opQAzn3rmjeZra4uAIyEAad7_M';
+const SHEET_NAME = 'Hoja 1';
+const SECRET_TOKEN = 'kriuu_form_2026';
+const HEADERS = [
+  'Fecha',
+  'Nombres',
+  'Apellidos',
+  'Edad',
+  'Género',
+  'Ciudad',
+  'Parroquia / sector',
+  'Correo',
+  'Teléfono / WhatsApp',
+  'Situación actual',
+  'Carrera o profesión',
+  'Áreas de interés',
+  'Cómo nos conoció',
+  'Detalle otro medio',
+  'Aceptó uso de datos',
+  'Aceptó código de conducta',
+];
 
 function doPost(e) {
   try {
@@ -44,11 +62,16 @@ function doPost(e) {
       return jsonResponse(false, 'Consent is required.');
     }
 
+    if (data.aceptaCodigoConducta !== true) {
+      return jsonResponse(false, 'Code of conduct acceptance is required.');
+    }
+
     if (!isValidEmail(data.correo)) {
       return jsonResponse(false, 'Invalid email address.');
     }
 
     const age = Number(data.edad);
+
     if (!Number.isInteger(age) || age < 12 || age > 80) {
       return jsonResponse(false, 'Invalid age.');
     }
@@ -57,7 +80,10 @@ function doPost(e) {
       return jsonResponse(false, 'Select at least one interest area.');
     }
 
-    if (data.referido === 'Otro medio' && (!data.otroMedio || data.otroMedio.trim() === '')) {
+    if (
+      data.referido === 'Otro medio' &&
+      (!data.otroMedio || data.otroMedio.trim() === '')
+    ) {
       return jsonResponse(false, 'Please specify the referral source.');
     }
 
@@ -73,6 +99,8 @@ function doPost(e) {
       if (!sheet) {
         return jsonResponse(false, 'Target sheet was not found.');
       }
+
+      ensureHeaders(sheet);
 
       const lastRow = sheet.getLastRow();
 
@@ -103,7 +131,8 @@ function doPost(e) {
         data.intereses.map(clean).join(', '),
         clean(data.referido),
         clean(data.otroMedio || data.referidoDetalle || ''),
-        'Yes',
+        data.acepta === true ? 'Sí' : 'No',
+        data.aceptaCodigoConducta === true ? 'Sí' : 'No',
       ]);
     } finally {
       lock.releaseLock();
@@ -121,12 +150,14 @@ function doGet() {
 
 function jsonResponse(ok, message) {
   return ContentService
-    .createTextOutput(JSON.stringify({
-      ok,
-      success: ok,
-      message,
-      error: ok ? '' : message,
-    }))
+    .createTextOutput(
+      JSON.stringify({
+        ok,
+        success: ok,
+        message,
+        error: ok ? '' : message,
+      }),
+    )
     .setMimeType(ContentService.MimeType.JSON);
 }
 
@@ -138,4 +169,19 @@ function clean(value) {
   return String(value || '')
     .trim()
     .replace(/\s+/g, ' ');
+}
+
+function ensureHeaders(sheet) {
+  const existingHeaders = sheet
+    .getRange(1, 1, 1, HEADERS.length)
+    .getValues()[0]
+    .map(clean);
+
+  const needsHeaders = HEADERS.some(
+    (header, index) => existingHeaders[index] !== header,
+  );
+
+  if (needsHeaders) {
+    sheet.getRange(1, 1, 1, HEADERS.length).setValues([HEADERS]);
+  }
 }

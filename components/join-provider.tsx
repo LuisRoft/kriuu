@@ -15,6 +15,10 @@ import {
 } from 'react';
 import { ArrowLeft, ArrowRight, ExternalLink } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+import {
+  CODE_OF_CONDUCT_DATE,
+  CODE_OF_CONDUCT_SECTIONS,
+} from '@/lib/code-of-conduct';
 
 const WHATSAPP_URL = 'https://chat.whatsapp.com/CizNIkE9F5Y5L66E24KJD6?mode=gi_t';
 const APPS_SCRIPT_URL = process.env.NEXT_PUBLIC_KRIUU_APPS_SCRIPT_URL ?? '';
@@ -59,6 +63,7 @@ type FormState = {
   otroMedio: string;
   website: string;
   acepta: boolean;
+  aceptaCodigoConducta: boolean;
 };
 
 const INITIAL_FORM: FormState = {
@@ -77,6 +82,7 @@ const INITIAL_FORM: FormState = {
   otroMedio: '',
   website: '',
   acepta: false,
+  aceptaCodigoConducta: false,
 };
 
 const JoinContext = createContext<JoinContextValue | null>(null);
@@ -218,6 +224,9 @@ export default function JoinProvider({ children }: { children: ReactNode }) {
       nextErrors.otroMedio = 'Cuéntanos cuál fue el medio.';
     }
     if (!form.acepta) nextErrors.acepta = 'Debes aceptar para continuar.';
+    if (!form.aceptaCodigoConducta) {
+      nextErrors.aceptaCodigoConducta = 'Debes aceptar el código de conducta para inscribirte.';
+    }
 
     setErrors(nextErrors);
     return Object.keys(nextErrors).length === 0;
@@ -535,6 +544,55 @@ export default function JoinProvider({ children }: { children: ReactNode }) {
                           />
                         </Field>
                       ) : null}
+                    </section>
+
+                    <section className='space-y-4 border-t border-dark/10 pt-6'>
+                      <div className='space-y-2'>
+                        <h3 className='font-display text-xl font-semibold'>Código de conducta</h3>
+                        <p className='text-sm leading-6 text-dark/68'>
+                          Antes de inscribirte, revisa el acuerdo de convivencia de Kriuu. Aplica a eventos presenciales, grupos de mensajería, redes sociales y cualquier espacio donde participe la comunidad.
+                        </p>
+                      </div>
+                      <details className='group border border-dark/12 bg-white/35'>
+                        <summary className='flex min-h-11 cursor-pointer list-none items-center justify-between gap-4 px-4 py-3 text-sm font-semibold text-dark/78 transition-colors hover:text-dark'>
+                          Ver código de conducta
+                          <span className='text-lg leading-none text-olive transition-transform group-open:rotate-45'>+</span>
+                        </summary>
+                        <div className='space-y-4 border-t border-dark/10 px-4 py-4'>
+                          {CODE_OF_CONDUCT_SECTIONS.map((section) => (
+                            <div key={section.title} className='space-y-1'>
+                              <h4 className='text-sm font-semibold text-dark'>{section.title}</h4>
+                              <p className='text-sm leading-6 text-dark/68'>
+                                {section.paragraphs.join(' ')}
+                              </p>
+                            </div>
+                          ))}
+                          <p className='border-t border-dark/10 pt-4 text-sm leading-6 text-dark/68'>
+                            Kriuu · {CODE_OF_CONDUCT_DATE}.
+                          </p>
+                        </div>
+                      </details>
+                      <div>
+                        <button
+                          type='button'
+                          onClick={() => updateField('aceptaCodigoConducta', !form.aceptaCodigoConducta)}
+                          className={`flex w-full items-start gap-3 rounded-none border p-4 text-left text-sm leading-6 transition-colors ${
+                            form.aceptaCodigoConducta
+                              ? 'border-olive bg-olive/8 text-dark'
+                              : 'border-dark/12 bg-white/35 text-dark/72'
+                          }`}
+                        >
+                          <span className='mt-1 flex size-4 shrink-0 items-center justify-center rounded border border-current text-[10px]'>
+                            {form.aceptaCodigoConducta ? '✓' : ''}
+                          </span>
+                          <span>
+                            He leído el código de conducta de Kriuu y acepto atenerme a él al inscribirme y participar en la comunidad.
+                          </span>
+                        </button>
+                        {errors.aceptaCodigoConducta ? (
+                          <p className={`${errorClass} mt-2`}>{errors.aceptaCodigoConducta}</p>
+                        ) : null}
+                      </div>
                       <div>
                         <button
                           type='button'
