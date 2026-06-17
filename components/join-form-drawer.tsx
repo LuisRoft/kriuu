@@ -138,6 +138,9 @@ export function JoinFormDrawer({ open, onOpenChange }: JoinFormDrawerProps) {
         overlayClassName='bg-dark/45 backdrop-blur-[2px]'
         className='z-1000 flex h-full flex-col border-cream/10 bg-cream text-dark outline-none data-[vaul-drawer-direction=right]:w-full data-[vaul-drawer-direction=right]:border-l data-[vaul-drawer-direction=right]:border-dark/10 data-[vaul-drawer-direction=right]:md:max-w-[760px]'
       >
+        <DrawerTitle className='sr-only'>
+          {didSucceed ? 'Solicitud enviada' : 'Postulación para formar parte de Kriuu'}
+        </DrawerTitle>
         <div className='flex items-center justify-between border-b border-dark/10 px-4 py-4 md:px-8 md:py-5'>
           <DrawerClose className='inline-flex min-h-11 items-center gap-3 rounded-none border border-dark/12 px-4 text-sm font-medium text-dark/78 transition-colors hover:border-dark/25 hover:text-dark'>
             <ArrowLeft className='size-4' />
@@ -159,7 +162,6 @@ export function JoinFormDrawer({ open, onOpenChange }: JoinFormDrawerProps) {
           <div className='px-5 py-8 md:px-8 md:py-10'>
             {didSucceed ? (
               <div className='mx-auto flex min-h-[60vh] max-w-lg flex-col items-center justify-center text-center'>
-                <DrawerTitle className='sr-only'>Solicitud enviada</DrawerTitle>
                 <div className='flex size-18 items-center justify-center rounded-none bg-olive/12 font-display text-3xl text-olive'>
                   *
                 </div>
