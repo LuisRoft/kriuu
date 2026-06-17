@@ -21,8 +21,6 @@ import {
 } from '@/lib/code-of-conduct';
 
 const WHATSAPP_URL = 'https://chat.whatsapp.com/CizNIkE9F5Y5L66E24KJD6?mode=gi_t';
-const APPS_SCRIPT_URL = process.env.NEXT_PUBLIC_KRIUU_APPS_SCRIPT_URL ?? '';
-const FORM_TOKEN = process.env.NEXT_PUBLIC_KRIUU_FORM_TOKEN ?? '';
 
 const INTERESTS = [
   'Tecnología & Desarrollo',
@@ -61,6 +59,7 @@ type FormState = {
   intereses: string[];
   referido: string;
   otroMedio: string;
+  carta: string;
   website: string;
   acepta: boolean;
   aceptaCodigoConducta: boolean;
@@ -80,6 +79,7 @@ const INITIAL_FORM: FormState = {
   intereses: [],
   referido: '',
   otroMedio: '',
+  carta: '',
   website: '',
   acepta: false,
   aceptaCodigoConducta: false,
@@ -110,9 +110,16 @@ export default function JoinProvider({ children }: { children: ReactNode }) {
   const dialogRef = useRef<HTMLElement | null>(null);
   const initialFocusRef = useRef<HTMLButtonElement | null>(null);
   const previousFocusRef = useRef<HTMLElement | null>(null);
+  const errorSummaryRef = useRef<HTMLDivElement | null>(null);
 
   const closeJoinForm = useCallback(() => {
     setIsOpen(false);
+  }, []);
+
+  const openJoinForm = useCallback(() => {
+    previousFocusRef.current =
+      document.activeElement instanceof HTMLElement ? document.activeElement : null;
+    setIsOpen(true);
   }, []);
 
   useEffect(() => {
@@ -140,14 +147,16 @@ export default function JoinProvider({ children }: { children: ReactNode }) {
 
   const value = useMemo(
     () => ({
-      openJoinForm: () => {
-        previousFocusRef.current =
-          document.activeElement instanceof HTMLElement ? document.activeElement : null;
-        setIsOpen(true);
-      },
+      openJoinForm,
     }),
-    [],
+    [openJoinForm],
   );
+
+  useEffect(() => {
+    if (new URLSearchParams(window.location.search).get('join') === '1') {
+      openJoinForm();
+    }
+  }, [openJoinForm]);
 
   function trapDialogFocus(event: ReactKeyboardEvent<HTMLElement>) {
     if (event.key !== 'Tab') return;
@@ -237,17 +246,11 @@ export default function JoinProvider({ children }: { children: ReactNode }) {
     setStatus('idle');
     setMessage('');
 
-    if (!validateForm()) return;
-
-    if (!APPS_SCRIPT_URL) {
-      setStatus('error');
-      setMessage('Falta configurar NEXT_PUBLIC_KRIUU_APPS_SCRIPT_URL con el endpoint de Apps Script.');
-      return;
-    }
-
-    if (!FORM_TOKEN) {
-      setStatus('error');
-      setMessage('Falta configurar NEXT_PUBLIC_KRIUU_FORM_TOKEN para enviar el formulario.');
+    if (!validateForm()) {
+      window.setTimeout(() => {
+        errorSummaryRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        errorSummaryRef.current?.focus();
+      }, 0);
       return;
     }
 
@@ -259,44 +262,28 @@ export default function JoinProvider({ children }: { children: ReactNode }) {
       apellidos: form.apellidos.trim(),
       correo: form.correo.trim().toLowerCase(),
       referidoDetalle: form.referido === 'Otro medio' ? form.otroMedio.trim() : '',
-      token: FORM_TOKEN,
       website: form.website,
     };
 
     try {
-      const usesAppsScript = APPS_SCRIPT_URL.includes('script.google.com');
+      const response = await fetch('/api/join', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(payload),
+      });
+      const result = await response.json();
 
-      if (usesAppsScript) {
-        await fetch(APPS_SCRIPT_URL, {
-          method: 'POST',
-          mode: 'no-cors',
-          headers: {
-            'Content-Type': 'text/plain;charset=utf-8',
-          },
-          body: JSON.stringify(payload),
-        });
-      } else {
-        const response = await fetch(APPS_SCRIPT_URL, {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'text/plain;charset=utf-8',
-          },
-          body: JSON.stringify(payload),
-        });
-        const result = await response.json();
-
-        if (!response.ok || !result.success) {
-          throw new Error(result.error || 'No se pudo guardar la inscripción.');
-        }
+      if (!response.ok || !result.success) {
+        throw new Error(result.error || 'No se pudo guardar la postulación.');
       }
 
       setStatus('success');
-      if (!usesAppsScript) {
-        setForm(INITIAL_FORM);
-      }
+      setForm(INITIAL_FORM);
     } catch (error) {
       setStatus('error');
-      setMessage(error instanceof Error ? error.message : 'No se pudo guardar la inscripción.');
+      setMessage(error instanceof Error ? error.message : 'No se pudo guardar la postulación.');
     }
   }
 
@@ -356,7 +343,7 @@ export default function JoinProvider({ children }: { children: ReactNode }) {
                     Solicitud enviada.
                   </h2>
                   <p className='mt-4 text-base leading-7 text-dark/68'>
-                    Tu solicitud quedó registrada. También puedes entrar al grupo de WhatsApp desde el botón de arriba.
+                    Tu postulación fue recibida por Kriuu y será revisada por el equipo. Si es aprobada, podrás crear tu contraseña e iniciar sesión en la plataforma.
                   </p>
                   <Button
                     type='button'
@@ -372,19 +359,40 @@ export default function JoinProvider({ children }: { children: ReactNode }) {
               ) : (
                 <>
                   <p className='text-xs font-medium uppercase tracking-widest text-dark/45'>
-                    Inscripción
+                    Postulación
                   </p>
                   <h2
                     id='join-title'
                     className='mt-4 max-w-xl font-display text-4xl font-semibold leading-none tracking-tight text-dark md:text-5xl'
                   >
-                    Únete a Kriuu.
+                    Postula para formar parte de Kriuu.
                   </h2>
                   <p className='mt-5 max-w-2xl text-sm leading-7 text-dark/68 md:text-base'>
-                    Completa tus datos para registrarte en la comunidad. El grupo de WhatsApp está disponible como acceso separado.
+                    Completa tus datos para solicitar una cuenta en la plataforma de Kriuu. Nuestro equipo revisará tu solicitud y, si es aprobada, podrás crear tu contraseña e iniciar sesión para participar como miembro.
                   </p>
 
                   <form onSubmit={submitForm} className='mt-8 space-y-8'>
+                    <p className='text-xs font-medium text-dark/55'>
+                      <span className='text-red-700'>*</span> Campos obligatorios.
+                    </p>
+
+                    {Object.keys(errors).length ? (
+                      <div
+                        ref={errorSummaryRef}
+                        tabIndex={-1}
+                        className='scroll-mt-6 border border-red-900/15 bg-red-900/8 px-4 py-3 text-sm text-red-800 outline-none'
+                      >
+                        <p className='font-semibold'>
+                          Revisa los campos obligatorios antes de enviar.
+                        </p>
+                        <ul className='mt-2 list-disc space-y-1 pl-5'>
+                          {Object.entries(errors).map(([field, error]) => (
+                            <li key={field}>{error}</li>
+                          ))}
+                        </ul>
+                      </div>
+                    ) : null}
+
                     <input
                       type='text'
                       tabIndex={-1}
@@ -398,7 +406,7 @@ export default function JoinProvider({ children }: { children: ReactNode }) {
                     <section className='space-y-4 border-t border-dark/10 pt-6'>
                       <h3 className='font-display text-xl font-semibold'>Datos personales</h3>
                       <div className='grid gap-4 md:grid-cols-2'>
-                        <Field label='Nombres' error={errors.nombres}>
+                        <Field label='Nombres' error={errors.nombres} required>
                           <input
                             className={fieldClass}
                             value={form.nombres}
@@ -406,7 +414,7 @@ export default function JoinProvider({ children }: { children: ReactNode }) {
                             placeholder='María José'
                           />
                         </Field>
-                        <Field label='Apellidos' error={errors.apellidos}>
+                        <Field label='Apellidos' error={errors.apellidos} required>
                           <input
                             className={fieldClass}
                             value={form.apellidos}
@@ -414,7 +422,7 @@ export default function JoinProvider({ children }: { children: ReactNode }) {
                             placeholder='Torres Vega'
                           />
                         </Field>
-                        <Field label='Edad' error={errors.edad}>
+                        <Field label='Edad' error={errors.edad} required>
                           <input
                             className={fieldClass}
                             type='number'
@@ -425,7 +433,7 @@ export default function JoinProvider({ children }: { children: ReactNode }) {
                             onChange={(event) => updateField('edad', event.target.value)}
                           />
                         </Field>
-                        <Field label='Género' error={errors.genero}>
+                        <Field label='Género' error={errors.genero} required>
                           <select
                             className={fieldClass}
                             value={form.genero}
@@ -438,7 +446,7 @@ export default function JoinProvider({ children }: { children: ReactNode }) {
                             <option>Prefiero no decir</option>
                           </select>
                         </Field>
-                        <Field label='Ciudad' error={errors.ciudad}>
+                        <Field label='Ciudad' error={errors.ciudad} required>
                           <input
                             className={fieldClass}
                             value={form.ciudad}
@@ -446,7 +454,7 @@ export default function JoinProvider({ children }: { children: ReactNode }) {
                             placeholder='Portoviejo'
                           />
                         </Field>
-                        <Field label='Parroquia / sector' error={errors.parroquia}>
+                        <Field label='Parroquia / sector' error={errors.parroquia} required>
                           <input
                             className={fieldClass}
                             value={form.parroquia}
@@ -454,7 +462,7 @@ export default function JoinProvider({ children }: { children: ReactNode }) {
                             placeholder='Andrés de Vera'
                           />
                         </Field>
-                        <Field label='Correo' error={errors.correo}>
+                        <Field label='Correo' error={errors.correo} required>
                           <input
                             className={fieldClass}
                             type='email'
@@ -463,7 +471,7 @@ export default function JoinProvider({ children }: { children: ReactNode }) {
                             placeholder='tu@correo.com'
                           />
                         </Field>
-                        <Field label='Teléfono / WhatsApp' error={errors.telefono}>
+                        <Field label='Teléfono / WhatsApp' error={errors.telefono} required>
                           <input
                             className={fieldClass}
                             type='tel'
@@ -477,7 +485,7 @@ export default function JoinProvider({ children }: { children: ReactNode }) {
 
                     <section className='space-y-4 border-t border-dark/10 pt-6'>
                       <h3 className='font-display text-xl font-semibold'>Formación e intereses</h3>
-                      <GroupField label='Situación actual' error={errors.situacion}>
+                      <GroupField label='Situación actual' error={errors.situacion} required>
                         <div className='grid gap-2 md:grid-cols-3'>
                           {SITUATIONS.map((value) => (
                             <Choice
@@ -489,7 +497,7 @@ export default function JoinProvider({ children }: { children: ReactNode }) {
                           ))}
                         </div>
                       </GroupField>
-                      <Field label='Carrera o profesión' error={errors.carrera}>
+                      <Field label='Carrera o profesión' error={errors.carrera} required>
                         <input
                           className={fieldClass}
                           value={form.carrera}
@@ -497,7 +505,7 @@ export default function JoinProvider({ children }: { children: ReactNode }) {
                           placeholder='Diseño, software, marketing...'
                         />
                       </Field>
-                      <GroupField label='Áreas de interés' error={errors.intereses}>
+                      <GroupField label='Áreas de interés' error={errors.intereses} required>
                         <div className='grid gap-2 md:grid-cols-2'>
                           {INTERESTS.map((value) => (
                             <Choice
@@ -513,7 +521,7 @@ export default function JoinProvider({ children }: { children: ReactNode }) {
 
                     <section className='space-y-4 border-t border-dark/10 pt-6'>
                       <h3 className='font-display text-xl font-semibold'>Comunidad</h3>
-                      <GroupField label='¿Cómo nos conociste?' error={errors.referido}>
+                      <GroupField label='¿Cómo nos conociste?' error={errors.referido} required>
                         <div className='grid gap-2 md:grid-cols-2'>
                           {[
                             'Un amigo / conocido',
@@ -535,7 +543,7 @@ export default function JoinProvider({ children }: { children: ReactNode }) {
                         </div>
                       </GroupField>
                       {form.referido === 'Otro medio' ? (
-                        <Field label='¿Cuál?' error={errors.otroMedio}>
+                        <Field label='¿Cuál?' error={errors.otroMedio} required>
                           <input
                             className={fieldClass}
                             value={form.otroMedio}
@@ -544,6 +552,17 @@ export default function JoinProvider({ children }: { children: ReactNode }) {
                           />
                         </Field>
                       ) : null}
+                      <Field label='Carta para Kriuu'>
+                        <textarea
+                          className={`${fieldClass} min-h-32 py-3 leading-6`}
+                          value={form.carta}
+                          onChange={(event) => updateField('carta', event.target.value)}
+                          placeholder='Cuéntanos por qué quieres unirte a Kriuu. Es opcional, pero ayuda al equipo a entender mejor tu postulación.'
+                        />
+                      </Field>
+                      <p className='text-sm leading-6 text-dark/60'>
+                        Esta carta es opcional, pero puede ayudar a que el equipo evalúe mejor tu postulación.
+                      </p>
                     </section>
 
                     <section className='space-y-4 border-t border-dark/10 pt-6'>
@@ -573,6 +592,10 @@ export default function JoinProvider({ children }: { children: ReactNode }) {
                         </div>
                       </details>
                       <div>
+                        <p className={`${labelClass} mb-2`}>
+                          Aceptación del código de conducta
+                          <span className='ml-1 text-red-700'>*</span>
+                        </p>
                         <button
                           type='button'
                           onClick={() => updateField('aceptaCodigoConducta', !form.aceptaCodigoConducta)}
@@ -594,6 +617,10 @@ export default function JoinProvider({ children }: { children: ReactNode }) {
                         ) : null}
                       </div>
                       <div>
+                        <p className={`${labelClass} mb-2`}>
+                          Uso de datos
+                          <span className='ml-1 text-red-700'>*</span>
+                        </p>
                         <button
                           type='button'
                           onClick={() => updateField('acepta', !form.acepta)}
@@ -626,7 +653,7 @@ export default function JoinProvider({ children }: { children: ReactNode }) {
                         disabled={status === 'sending'}
                         className='group/button h-auto gap-2 px-7 py-3.5 text-sm font-semibold'
                       >
-                        {status === 'sending' ? 'Guardando...' : 'Enviar inscripción'}
+                        {status === 'sending' ? 'Guardando...' : 'Enviar postulación'}
                         <ArrowRight className='size-4 transition-transform duration-200 group-hover/button:translate-x-1' />
                       </Button>
                       <Link
@@ -654,14 +681,19 @@ function Field({
   children,
   error,
   label,
+  required = false,
 }: {
   children: ReactNode;
   error?: string;
   label: string;
+  required?: boolean;
 }) {
   return (
     <label className='flex flex-col gap-2'>
-      <span className={labelClass}>{label}</span>
+      <span className={labelClass}>
+        {label}
+        {required ? <span className='ml-1 text-red-700'>*</span> : null}
+      </span>
       {children}
       {error ? <span className={errorClass}>{error}</span> : null}
     </label>
@@ -672,14 +704,19 @@ function GroupField({
   children,
   error,
   label,
+  required = false,
 }: {
   children: ReactNode;
   error?: string;
   label: string;
+  required?: boolean;
 }) {
   return (
     <fieldset className='flex flex-col gap-2'>
-      <legend className={labelClass}>{label}</legend>
+      <legend className={labelClass}>
+        {label}
+        {required ? <span className='ml-1 text-red-700'>*</span> : null}
+      </legend>
       {children}
       {error ? <span className={errorClass}>{error}</span> : null}
     </fieldset>

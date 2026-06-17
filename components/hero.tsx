@@ -1,8 +1,9 @@
 import Image from 'next/image';
+import Link from 'next/link';
 import heroIllustration from '@/public/bgs/hero-illustration.webp';
 import JoinButton from '@/components/join-button';
 
-export default function Hero() {
+export default function Hero({ isAuthenticated = false }: { isAuthenticated?: boolean }) {
   return (
     <section className='relative min-h-svh w-full overflow-hidden xl:h-svh'>
       <Image
@@ -30,11 +31,20 @@ export default function Hero() {
         </p>
 
         <div className='flex flex-col gap-3'>
-          <JoinButton
-            className='w-fit px-5 py-3 text-sm md:px-8 md:py-4 md:text-lg'
-            iconClassName='size-4 md:size-5'
-            size='lg'
-          />
+          {isAuthenticated ? (
+            <Link
+              href='/dashboard'
+              className='inline-flex min-h-12 w-fit items-center justify-center bg-olive px-5 py-3 text-sm font-semibold text-white transition-opacity hover:opacity-90 md:px-8 md:py-4 md:text-lg'
+            >
+              Ir al dashboard
+            </Link>
+          ) : (
+            <JoinButton
+              className='w-fit px-5 py-3 text-sm md:px-8 md:py-4 md:text-lg'
+              iconClassName='size-4 md:size-5'
+              size='lg'
+            />
+          )}
           <p className='text-xs text-dark/60 md:text-sm'>
             Nació en Manabí, Ecuador. Es para todos.
           </p>
