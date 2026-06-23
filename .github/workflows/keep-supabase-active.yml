@@ -27,22 +27,48 @@ jobs:
             echo "run=false" >> "$GITHUB_OUTPUT"
           fi
 
-      - name: Query one Supabase row
+      - name: Query Supabase
         if: steps.schedule.outputs.run == 'true'
         env:
           SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
           SUPABASE_PUBLISHABLE_KEY: ${{ secrets.SUPABASE_PUBLISHABLE_KEY }}
         shell: bash
         run: |
+          set -euo pipefail
+
           if [[ -z "$SUPABASE_URL" || -z "$SUPABASE_PUBLISHABLE_KEY" ]]; then
             echo "Missing SUPABASE_URL or SUPABASE_PUBLISHABLE_KEY repository secret."
             exit 1
           fi
 
+          # Validate the project URL and publishable key separately. This must
+          # succeed, so an invalid secret does not get mistaken for an RLS denial.
           curl --fail --silent --show-error \
+            --connect-timeout 10 \
+            --max-time 30 \
             --output /dev/null \
             --header "apikey: $SUPABASE_PUBLISHABLE_KEY" \
             --header "Accept: application/json" \
-            "${SUPABASE_URL%/}/rest/v1/profiles?select=id&limit=1"
+            "${SUPABASE_URL%/}/rest/v1/"
 
-          echo "Supabase responded successfully."
+          # Attempt a real table query. An anon role without a SELECT policy can
+          # legitimately receive 401/403; the request still reaches Supabase and
+          # serves the keep-alive purpose. Network and server errors still fail.
+          status=$(curl --silent --show-error \
+            --connect-timeout 10 \
+            --max-time 30 \
+            --output /dev/null \
+            --write-out "%{http_code}" \
+            --header "apikey: $SUPABASE_PUBLISHABLE_KEY" \
+            --header "Accept: application/json" \
+            "${SUPABASE_URL%/}/rest/v1/profiles?select=id&limit=1")
+
+          case "$status" in
+            2??|401|403)
+              echo "Supabase responded to the database query (HTTP $status)."
+              ;;
+            *)
+              echo "Unexpected response from Supabase (HTTP $status)."
+              exit 1
+              ;;
+          esac

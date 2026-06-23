@@ -40,6 +40,8 @@ SUPABASE_PUBLISHABLE_KEY=tu_publishable_key
 
 No uses la `SUPABASE_SERVICE_ROLE_KEY` para este workflow; la clave pública es suficiente para la consulta.
 
+El workflow valida primero la URL y la publishable key. Después intenta leer una fila de `profiles`; si RLS bloquea al rol `anon` con `401` o `403`, la ejecución se considera válida porque la petición sí llegó a Supabase. Los errores de red y del servidor continúan fallando para que sean visibles.
+
 ## Inscripciones Con Supabase
 
 El formulario de inscripción ahora funciona como postulación. Vive en `components/join-provider.tsx` y envía los datos a `/api/join`, que guarda el registro en `public.applications` con `status = pending`.
