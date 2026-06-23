@@ -19,7 +19,7 @@ async function loadGoogleFont(font: string, text: string) {
 
 export async function GET() {
   const allText =
-    'kriuu. No importa desde dónde. engineers · designers · founders Comunidad · Latam Nació en Manabí. Es para todos.';
+    'kriuu. Tecnología, IA y ética tech. Comunidad · Latam Nació en Manabí. Es para todos.';
 
   const fontData = await loadGoogleFont('Space+Grotesk:wght@700', allText);
 
@@ -99,7 +99,7 @@ export async function GET() {
                   letterSpacing: '-4px',
                 }}
               >
-                No importa
+                Tecnología,
               </span>
               <span
                 style={{
@@ -111,7 +111,7 @@ export async function GET() {
                   letterSpacing: '-4px',
                 }}
               >
-                desde dónde.
+                IA y ética.
               </span>
             </div>
           </div>
@@ -144,7 +144,7 @@ export async function GET() {
               letterSpacing: '-0.5px',
             }}
           >
-            engineers · designers · founders
+            comunidad tech · diseño · emprendimiento
           </span>
           <span
             style={{

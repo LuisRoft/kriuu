@@ -6,12 +6,13 @@ import {
   type ReactNode,
   useCallback,
   useContext,
+  useEffect,
   useMemo,
   useState,
 } from 'react';
 
 const JoinFormDrawer = dynamic(
-  () => import('./join-form-drawer').then((m) => m.JoinFormDrawer),
+  () => import('./join-form-drawer').then((module) => module.JoinFormDrawer),
   { ssr: false },
 );
 
@@ -39,6 +40,12 @@ export default function JoinProvider({ children }: { children: ReactNode }) {
     setDrawerMounted(true);
     setIsOpen(true);
   }, []);
+
+  useEffect(() => {
+    if (new URLSearchParams(window.location.search).get('join') === '1') {
+      window.setTimeout(openJoinForm, 0);
+    }
+  }, [openJoinForm]);
 
   const value = useMemo(() => ({ openJoinForm }), [openJoinForm]);
 

@@ -73,6 +73,7 @@ export const joinFormSchema = z
       .min(1, 'Selecciona cómo nos conociste.')
       .refine(isIn(JOIN_REFERIDO_OPTIONS), 'Selecciona cómo nos conociste.'),
     otroMedio: z.string(),
+    carta: z.string(),
     website: z.string(),
     acepta: z.boolean().refine((v) => v === true, 'Debes aceptar para continuar.'),
     aceptaCodigoConducta: z
@@ -106,6 +107,7 @@ export function joinFormDefaultValues(): JoinFormValues {
     intereses: [],
     referido: '',
     otroMedio: '',
+    carta: '',
     website: '',
     acepta: false,
     aceptaCodigoConducta: false,

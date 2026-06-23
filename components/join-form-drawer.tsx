@@ -50,8 +50,6 @@ import {
 
 const WHATSAPP_URL =
   'https://chat.whatsapp.com/CizNIkE9F5Y5L66E24KJD6?mode=gi_t';
-const APPS_SCRIPT_URL = process.env.NEXT_PUBLIC_KRIUU_APPS_SCRIPT_URL ?? '';
-const FORM_TOKEN = process.env.NEXT_PUBLIC_KRIUU_FORM_TOKEN ?? '';
 
 const inputClassName =
   'min-h-11 border-dark/12 bg-cream px-3 text-sm text-dark placeholder:text-dark/40 focus-visible:border-olive focus-visible:ring-olive/25';
@@ -94,20 +92,6 @@ export function JoinFormDrawer({ open, onOpenChange }: JoinFormDrawerProps) {
   const onSubmit = async (data: JoinFormValues) => {
     setServerMessage('');
 
-    if (!APPS_SCRIPT_URL) {
-      setServerMessage(
-        'Falta configurar NEXT_PUBLIC_KRIUU_APPS_SCRIPT_URL con el endpoint de Apps Script.',
-      );
-      return;
-    }
-
-    if (!FORM_TOKEN) {
-      setServerMessage(
-        'Falta configurar NEXT_PUBLIC_KRIUU_FORM_TOKEN para enviar el formulario.',
-      );
-      return;
-    }
-
     const payload = {
       ...data,
       nombres: data.nombres.trim(),
@@ -115,46 +99,30 @@ export function JoinFormDrawer({ open, onOpenChange }: JoinFormDrawerProps) {
       correo: data.correo.trim().toLowerCase(),
       referidoDetalle:
         data.referido === 'Otro medio' ? data.otroMedio.trim() : '',
-      token: FORM_TOKEN,
       website: data.website,
     };
 
     try {
-      const usesAppsScript = APPS_SCRIPT_URL.includes('script.google.com');
+      const response = await fetch('/api/join', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(payload),
+      });
+      const result = await response.json();
 
-      if (usesAppsScript) {
-        await fetch(APPS_SCRIPT_URL, {
-          method: 'POST',
-          mode: 'no-cors',
-          headers: {
-            'Content-Type': 'text/plain;charset=utf-8',
-          },
-          body: JSON.stringify(payload),
-        });
-      } else {
-        const response = await fetch(APPS_SCRIPT_URL, {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'text/plain;charset=utf-8',
-          },
-          body: JSON.stringify(payload),
-        });
-        const result = await response.json();
-
-        if (!response.ok || !result.success) {
-          throw new Error(result.error || 'No se pudo guardar la inscripción.');
-        }
+      if (!response.ok || !result.success) {
+        throw new Error(result.error || 'No se pudo guardar la postulación.');
       }
 
       setDidSucceed(true);
-      if (!usesAppsScript) {
-        form.reset(joinFormDefaultValues());
-      }
+      form.reset(joinFormDefaultValues());
     } catch (error) {
       setServerMessage(
         error instanceof Error
           ? error.message
-          : 'No se pudo guardar la inscripción.',
+          : 'No se pudo guardar la postulación.',
       );
     }
   };
@@ -170,6 +138,9 @@ export function JoinFormDrawer({ open, onOpenChange }: JoinFormDrawerProps) {
         overlayClassName='bg-dark/45 backdrop-blur-[2px]'
         className='z-1000 flex h-full flex-col border-cream/10 bg-cream text-dark outline-none data-[vaul-drawer-direction=right]:w-full data-[vaul-drawer-direction=right]:border-l data-[vaul-drawer-direction=right]:border-dark/10 data-[vaul-drawer-direction=right]:md:max-w-[760px]'
       >
+        <DrawerTitle className='sr-only'>
+          {didSucceed ? 'Solicitud enviada' : 'Postulación para formar parte de Kriuu'}
+        </DrawerTitle>
         <div className='flex items-center justify-between border-b border-dark/10 px-4 py-4 md:px-8 md:py-5'>
           <DrawerClose className='inline-flex min-h-11 items-center gap-3 rounded-none border border-dark/12 px-4 text-sm font-medium text-dark/78 transition-colors hover:border-dark/25 hover:text-dark'>
             <ArrowLeft className='size-4' />
@@ -191,7 +162,6 @@ export function JoinFormDrawer({ open, onOpenChange }: JoinFormDrawerProps) {
           <div className='px-5 py-8 md:px-8 md:py-10'>
             {didSucceed ? (
               <div className='mx-auto flex min-h-[60vh] max-w-lg flex-col items-center justify-center text-center'>
-                <DrawerTitle className='sr-only'>Solicitud enviada</DrawerTitle>
                 <div className='flex size-18 items-center justify-center rounded-none bg-olive/12 font-display text-3xl text-olive'>
                   *
                 </div>
@@ -199,9 +169,9 @@ export function JoinFormDrawer({ open, onOpenChange }: JoinFormDrawerProps) {
                   Solicitud enviada.
                 </h2>
                 <p className='mt-4 text-base leading-7 text-dark/68'>
-                  Si tus datos pasan las validaciones, tu inscripción quedará
-                  registrada. También puedes entrar al grupo de WhatsApp desde
-                  el botón de arriba.
+                  Tu postulación fue recibida por Kriuu y será revisada por el
+                  equipo. Si es aprobada, podrás crear tu contraseña e iniciar
+                  sesión en la plataforma.
                 </p>
                 <Button
                   type='button'
@@ -217,17 +187,19 @@ export function JoinFormDrawer({ open, onOpenChange }: JoinFormDrawerProps) {
             ) : (
               <>
                 <p className='text-xs font-medium uppercase tracking-widest text-dark/45'>
-                  Inscripción
+                  Postulación
                 </p>
                 <DrawerTitle
                   id='join-title'
                   className='mt-4 max-w-xl font-display text-4xl font-semibold leading-none tracking-tight text-dark md:text-5xl'
                 >
-                  Únete a Kriuu.
+                  Postula para formar parte de Kriuu.
                 </DrawerTitle>
                 <p className='mt-5 max-w-2xl text-sm leading-7 text-dark/68 md:text-base'>
-                  Completa tus datos para registrarte en la comunidad. El grupo
-                  de WhatsApp está disponible como acceso separado.
+                  Completa tus datos para solicitar una cuenta en la plataforma
+                  de Kriuu. Nuestro equipo revisará tu solicitud y, si es
+                  aprobada, podrás crear tu contraseña e iniciar sesión para
+                  participar como miembro.
                 </p>
 
                 <form
@@ -651,6 +623,37 @@ export function JoinFormDrawer({ open, onOpenChange }: JoinFormDrawerProps) {
                         )}
                       />
                     ) : null}
+                    <Controller
+                      name='carta'
+                      control={form.control}
+                      render={({ field, fieldState }) => (
+                        <Field data-invalid={fieldState.invalid}>
+                          <FieldLabel
+                            htmlFor='join-carta'
+                            className={legendLabelClass}
+                          >
+                            Carta para Kriuu
+                          </FieldLabel>
+                          <textarea
+                            {...field}
+                            id='join-carta'
+                            className={`${inputClassName} min-h-32 rounded-md border py-3 leading-6 outline-none`}
+                            placeholder='Cuéntanos por qué quieres unirte a Kriuu. Es opcional, pero ayuda al equipo a entender mejor tu postulación.'
+                            aria-invalid={fieldState.invalid}
+                          />
+                          {fieldState.invalid ? (
+                            <FieldError
+                              errors={[fieldState.error]}
+                              className='text-red-700'
+                            />
+                          ) : null}
+                          <p className='text-sm leading-6 text-dark/60'>
+                            Esta carta es opcional, pero puede ayudar a que el
+                            equipo evalúe mejor tu postulación.
+                          </p>
+                        </Field>
+                      )}
+                    />
                   </section>
 
                   <section className='space-y-4 border-t border-dark/10 pt-6'>
@@ -795,7 +798,7 @@ export function JoinFormDrawer({ open, onOpenChange }: JoinFormDrawerProps) {
                     >
                       {form.formState.isSubmitting
                         ? 'Guardando...'
-                        : 'Enviar inscripción'}
+                        : 'Enviar postulación'}
                       <ArrowRight className='size-4 transition-transform duration-200 group-hover/button:translate-x-1' />
                     </Button>
                     <Link

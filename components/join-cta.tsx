@@ -1,8 +1,9 @@
 import Image from 'next/image';
+import Link from 'next/link';
 import bgCta from '@/public/bgs/bg-cta.webp';
 import JoinButton from '@/components/join-button';
 
-export default function JoinCta() {
+export default function JoinCta({ isAuthenticated = false }: { isAuthenticated?: boolean }) {
   return (
     <section
       id='join'
@@ -21,7 +22,7 @@ export default function JoinCta() {
         <div className='space-y-5 text-[17px] leading-[1.7] text-cream'>
           <p>
             Kriuu funciona en la medida en que la gente participa, propone y se
-            compromete. No somos una plataforma ni un programa. Somos una
+            compromete. No somos solo una plataforma ni un programa. Somos una
             comunidad, lo que significa que es tan buena como las personas que
             la forman.
           </p>
@@ -33,7 +34,16 @@ export default function JoinCta() {
         </div>
 
         <div className='mt-10 flex flex-col items-center gap-3 sm:flex-row sm:justify-center'>
-          <JoinButton className='px-7 py-3.5 text-sm' />
+          {isAuthenticated ? (
+            <Link
+              href='/dashboard'
+              className='inline-flex min-h-11 items-center bg-cream px-7 py-3.5 text-sm font-semibold text-dark transition-opacity hover:opacity-90'
+            >
+              Ir al dashboard
+            </Link>
+          ) : (
+            <JoinButton className='px-7 py-3.5 text-sm' />
+          )}
         </div>
       </div>
     </section>
