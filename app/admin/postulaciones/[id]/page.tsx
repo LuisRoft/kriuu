@@ -46,6 +46,27 @@ export default async function ApplicationDetailPage({ params }: PageProps) {
     [reviewerProfile?.nombres, reviewerProfile?.apellidos].filter(Boolean).join(' ') ||
     reviewerEmail ||
     'Pendiente';
+  let approvalEmailStatus = 'Pendiente';
+
+  if (application.created_user_id) {
+    try {
+      const createdUserResult = await supabaseAdmin.auth.admin.getUserById(
+        application.created_user_id,
+      );
+      const createdUser = createdUserResult.data.user;
+      const emailWasSent = createdUser?.user_metadata?.approval_email_sent;
+
+      if (emailWasSent === false) {
+        approvalEmailStatus = 'No enviado por límite de Supabase';
+      } else if (emailWasSent === true || createdUser?.invited_at) {
+        approvalEmailStatus = 'Invitación enviada';
+      } else {
+        approvalEmailStatus = 'No requerido o sin registro de envío';
+      }
+    } catch {
+      approvalEmailStatus = 'No disponible';
+    }
+  }
 
   return (
     <section className='grid gap-6 py-10 lg:grid-cols-[1fr_360px]'>
@@ -91,6 +112,7 @@ export default async function ApplicationDetailPage({ params }: PageProps) {
           </DetailGroup>
           <DetailGroup title='Resultado'>
             <Detail label='Usuario creado' value={application.created_user_id || 'Pendiente'} />
+            <Detail label='Correo de invitación' value={approvalEmailStatus} />
             <Detail label='Revisado por' value={reviewerName} />
             <Detail label='Motivo de aprobación' value={application.approval_reason || 'Sin motivo'} />
             <Detail label='Motivo de rechazo' value={application.rejection_reason || 'Sin motivo'} />

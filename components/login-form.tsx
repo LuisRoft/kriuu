@@ -8,7 +8,17 @@ import { createClientSupabaseClient } from '@/lib/supabase/client';
 
 type AccessState =
   | { status: 'idle' }
-  | { status: 'missing' | 'pending' | 'rejected' | 'needs_password' | 'ready' | 'no_role'; message: string };
+  | {
+      status:
+        | 'missing'
+        | 'pending'
+        | 'rejected'
+        | 'needs_password'
+        | 'temporary_password'
+        | 'ready'
+        | 'no_role';
+      message: string;
+    };
 
 const inputClass =
   'min-h-11 rounded-md border border-dark/12 bg-cream px-3 text-sm text-dark outline-none transition-colors focus:border-olive';
@@ -231,6 +241,17 @@ export default function LoginForm() {
                 Si Supabase limita el correo temporalmente, un admin o superadmin puede asignarte una contraseña temporal desde Usuarios.
               </p>
             </div>
+          ) : null}
+
+          {access.status === 'temporary_password' ? (
+            <Button
+              type='button'
+              onClick={() => switchMode('login')}
+              className='mt-4 h-auto gap-2 px-5 py-3 text-sm'
+            >
+              <KeyRound className='size-4' />
+              Ingresar con contraseña temporal
+            </Button>
           ) : null}
 
           {access.status === 'ready' ? (

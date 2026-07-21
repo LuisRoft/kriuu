@@ -1,7 +1,6 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import { useRouter } from 'next/navigation';
 import { KeyRound } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { createClientSupabaseClient } from '@/lib/supabase/client';
@@ -10,7 +9,6 @@ const inputClass =
   'min-h-11 rounded-md border border-dark/12 bg-cream px-3 text-sm text-dark outline-none transition-colors focus:border-olive';
 
 export default function UpdatePasswordForm() {
-  const router = useRouter();
   const [password, setPassword] = useState('');
   const [confirmation, setConfirmation] = useState('');
   const [message, setMessage] = useState('');
@@ -71,11 +69,38 @@ export default function UpdatePasswordForm() {
 
     try {
       const supabase = createClientSupabaseClient();
-      const { error } = await supabase.auth.updateUser({ password });
+      const {
+        data: { user },
+        error: userError,
+      } = await supabase.auth.getUser();
 
-      if (error) throw error;
+      if (userError) throw userError;
+      if (!user?.email) throw new Error('No se pudo identificar el correo de la cuenta.');
 
-      router.push('/dashboard');
+      const completionResponse = await fetch('/api/auth/complete-first-access', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ password }),
+      });
+      const completionResult = await completionResponse.json().catch(() => ({}));
+
+      if (!completionResponse.ok || !completionResult.success) {
+        throw new Error(
+          completionResult.error || 'La contraseña cambió, pero no se pudo completar el acceso.',
+        );
+      }
+
+      const { error: signInError } = await supabase.auth.signInWithPassword({
+        email: user.email,
+        password,
+      });
+
+      if (signInError) throw signInError;
+
+      const redirectResponse = await fetch('/api/auth/after-login', { method: 'POST' });
+      const redirectResult = await redirectResponse.json().catch(() => ({}));
+
+      window.location.href = redirectResult.redirectTo ?? '/dashboard';
     } catch (error) {
       setMessage(error instanceof Error ? error.message : 'No se pudo guardar la contraseña.');
     } finally {

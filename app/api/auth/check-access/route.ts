@@ -53,6 +53,14 @@ export async function POST(request: Request) {
     });
   }
 
+  if (authUser?.app_metadata?.must_change_password === true && hasPlatformRole) {
+    return NextResponse.json({
+      status: 'temporary_password',
+      message:
+        'Tu cuenta fue creada sin correo. Ingresa con la contraseña temporal que te entregó un administrador; después crearás tu contraseña definitiva.',
+    });
+  }
+
   if (authUser && hasPlatformRole && !application) {
     if (!authUser.last_sign_in_at) {
       return NextResponse.json({

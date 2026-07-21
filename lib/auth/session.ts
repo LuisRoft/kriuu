@@ -18,16 +18,17 @@ export async function getCurrentSessionUser() {
     return { user: null, roles: [], profile: null, isActive: false };
   }
 
-  const roles = await getUserRoles(user.id);
+  const mustChangePassword = user.app_metadata?.must_change_password === true;
+  const roles = mustChangePassword ? [] : await getUserRoles(user.id);
   const supabase = await createServerSupabaseClient();
   const { data: profile } = await supabase
     .from('profiles')
     .select('status')
     .eq('id', user.id)
     .maybeSingle();
-  const isActive = !profile?.status || profile.status === 'active';
+  const isActive = (!profile?.status || profile.status === 'active') && !mustChangePassword;
 
-  return { user, roles, profile, isActive };
+  return { user, roles, profile, isActive, mustChangePassword };
 }
 
 export async function requireAuth(redirectTo = '/login') {
@@ -35,6 +36,10 @@ export async function requireAuth(redirectTo = '/login') {
 
   if (!user) {
     redirect(redirectTo);
+  }
+
+  if (user.app_metadata?.must_change_password === true) {
+    redirect('/auth/update-password?first=1');
   }
 
   return { user, roles, profile, isActive };
