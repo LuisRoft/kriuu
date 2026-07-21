@@ -1,10 +1,30 @@
+export const productionSiteUrl = 'https://kriuu.com';
+
+export function normalizeSiteUrl(value?: string) {
+  const rawValue = value?.trim();
+
+  if (!rawValue) return null;
+
+  const isLocalUrl = /^(localhost|127\.0\.0\.1)(:\d+)?(\/|$)/i.test(rawValue);
+  const urlWithProtocol = /^https?:\/\//i.test(rawValue)
+    ? rawValue
+    : `${isLocalUrl ? 'http' : 'https'}://${rawValue}`;
+
+  try {
+    return new URL(urlWithProtocol).origin;
+  } catch {
+    return null;
+  }
+}
+
+const configuredSiteUrl = normalizeSiteUrl(process.env.NEXT_PUBLIC_SITE_URL);
+const vercelSiteUrl = normalizeSiteUrl(process.env.VERCEL_PROJECT_PRODUCTION_URL);
+
 export const siteUrl =
-  process.env.NEXT_PUBLIC_SITE_URL ??
+  configuredSiteUrl ??
   (process.env.NODE_ENV === 'production'
-    ? 'https://kriuu.com'
-    : process.env.VERCEL_PROJECT_PRODUCTION_URL
-    ? `https://${process.env.VERCEL_PROJECT_PRODUCTION_URL}`
-    : 'http://localhost:3000');
+    ? productionSiteUrl
+    : vercelSiteUrl ?? 'http://localhost:3000');
 
 export const siteName = 'kriuu.';
 

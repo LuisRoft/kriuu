@@ -1,5 +1,6 @@
 import type { User } from '@supabase/supabase-js';
 import { createAdminSupabaseClient } from '@/lib/supabase/admin';
+import { normalizeSiteUrl, productionSiteUrl } from '@/lib/site';
 
 export async function findAuthUserByEmail(email: string): Promise<User | null> {
   const supabaseAdmin = createAdminSupabaseClient();
@@ -25,28 +26,30 @@ export async function findAuthUserByEmail(email: string): Promise<User | null> {
 }
 
 export function getSiteUrl(request?: Request) {
-  const configuredSiteUrl = process.env.NEXT_PUBLIC_SITE_URL?.trim();
+  const configuredSiteUrl = normalizeSiteUrl(process.env.NEXT_PUBLIC_SITE_URL);
   const isLocalConfiguredUrl = configuredSiteUrl
     ? /^https?:\/\/(localhost|127\.0\.0\.1)(:\d+)?$/i.test(configuredSiteUrl)
     : false;
 
   if (process.env.NODE_ENV === 'production') {
     return configuredSiteUrl && !isLocalConfiguredUrl
-      ? configuredSiteUrl.replace(/\/+$/, '')
-      : 'https://kriuu.com';
+      ? configuredSiteUrl
+      : productionSiteUrl;
   }
 
   if (configuredSiteUrl) {
-    return configuredSiteUrl.replace(/\/+$/, '');
+    return configuredSiteUrl;
   }
 
-  if (process.env.VERCEL_PROJECT_PRODUCTION_URL) {
-    return `https://${process.env.VERCEL_PROJECT_PRODUCTION_URL}`.replace(/\/+$/, '');
+  const vercelSiteUrl = normalizeSiteUrl(process.env.VERCEL_PROJECT_PRODUCTION_URL);
+
+  if (vercelSiteUrl) {
+    return vercelSiteUrl;
   }
 
   if (request) {
     return new URL(request.url).origin;
   }
 
-  return configuredSiteUrl?.replace(/\/+$/, '') ?? 'http://localhost:3000';
+  return 'http://localhost:3000';
 }
