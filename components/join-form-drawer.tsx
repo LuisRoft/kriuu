@@ -132,16 +132,17 @@ export function JoinFormDrawer({ open, onOpenChange }: JoinFormDrawerProps) {
       open={open}
       onOpenChange={onOpenChange}
       direction='right'
+      handleOnly
       repositionInputs={false}
     >
       <DrawerContent
         overlayClassName='bg-dark/45 backdrop-blur-[2px]'
-        className='z-1000 flex h-full flex-col border-cream/10 bg-cream text-dark outline-none data-[vaul-drawer-direction=right]:w-full data-[vaul-drawer-direction=right]:border-l data-[vaul-drawer-direction=right]:border-dark/10 data-[vaul-drawer-direction=right]:md:max-w-[760px]'
+        className='z-1000 flex h-dvh max-h-dvh max-w-[100vw] flex-col overflow-hidden overscroll-none border-cream/10 bg-cream text-dark outline-none data-[vaul-drawer-direction=right]:w-full data-[vaul-drawer-direction=right]:border-l data-[vaul-drawer-direction=right]:border-dark/10 data-[vaul-drawer-direction=right]:md:max-w-[760px]'
       >
         <DrawerTitle className='sr-only'>
           {didSucceed ? 'Solicitud enviada' : 'Postulación para formar parte de Kriuu'}
         </DrawerTitle>
-        <div className='flex items-center justify-between border-b border-dark/10 px-4 py-4 md:px-8 md:py-5'>
+        <div className='flex shrink-0 items-center justify-between border-b border-dark/10 px-4 py-4 md:px-8 md:py-5'>
           <DrawerClose className='inline-flex min-h-11 items-center gap-3 rounded-none border border-dark/12 px-4 text-sm font-medium text-dark/78 transition-colors hover:border-dark/25 hover:text-dark'>
             <ArrowLeft className='size-4' />
             <span>Volver</span>
@@ -158,7 +159,7 @@ export function JoinFormDrawer({ open, onOpenChange }: JoinFormDrawerProps) {
           </Link>
         </div>
 
-        <div className='flex-1 overflow-y-auto'>
+        <div className='min-h-0 flex-1 touch-pan-y overflow-x-hidden overflow-y-auto overscroll-contain [scrollbar-width:none] [&::-webkit-scrollbar]:hidden'>
           <div className='px-5 py-8 md:px-8 md:py-10'>
             {didSucceed ? (
               <div className='mx-auto flex min-h-[60vh] max-w-lg flex-col items-center justify-center text-center'>
