@@ -45,6 +45,25 @@ export default function AdminUserActions({
         throw new Error(result.error || 'No se pudo completar la acción.');
       }
 
+      if (path === 'delete') {
+        const currentPath = `${window.location.pathname}${window.location.search}`;
+        const previousPath = sessionStorage.getItem('kriuu:previous-path');
+        let destination = '/admin/usuarios';
+
+        if (
+          previousPath &&
+          previousPath.startsWith('/') &&
+          !previousPath.startsWith('//') &&
+          previousPath !== currentPath &&
+          !previousPath.startsWith(`/admin/usuarios/${userId}`)
+        ) {
+          destination = previousPath;
+        }
+
+        router.replace(destination);
+        return;
+      }
+
       setMessage(result.message);
       setPassword('');
       router.refresh();
@@ -116,7 +135,7 @@ export default function AdminUserActions({
       <div className='space-y-3 border-t border-dark/10 pt-4'>
         <label className='flex flex-col gap-2'>
           <span className='text-xs font-semibold uppercase tracking-[0.16em] text-dark/55'>
-            Nueva contraseña
+            Contraseña temporal
           </span>
           <input
             className={inputClass}
@@ -132,7 +151,7 @@ export default function AdminUserActions({
           className='h-auto gap-2 px-5 py-3 text-sm'
         >
           <KeyRound className='size-4' />
-          Cambiar contraseña
+          Asignar contraseña temporal
         </Button>
       </div>
 

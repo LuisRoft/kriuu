@@ -9,6 +9,10 @@ export async function POST() {
     return NextResponse.json({ redirectTo: '/login' });
   }
 
+  if (user.app_metadata?.must_change_password === true) {
+    return NextResponse.json({ redirectTo: '/auth/update-password?first=1' });
+  }
+
   if (!isActive) {
     return NextResponse.json({ redirectTo: '/login?error=inactive' });
   }

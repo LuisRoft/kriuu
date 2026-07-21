@@ -25,11 +25,30 @@ export async function POST(request: Request, context: RouteContext) {
   }
 
   const supabaseAdmin = createAdminSupabaseClient();
-  const { error } = await supabaseAdmin.auth.admin.updateUserById(id, { password });
+  const { data: targetUserResult, error: targetUserError } =
+    await supabaseAdmin.auth.admin.getUserById(id);
+
+  if (targetUserError || !targetUserResult.user) {
+    return NextResponse.json(
+      { success: false, error: targetUserError?.message ?? 'Usuario no encontrado.' },
+      { status: 404 },
+    );
+  }
+
+  const { error } = await supabaseAdmin.auth.admin.updateUserById(id, {
+    password,
+    app_metadata: {
+      ...targetUserResult.user.app_metadata,
+      must_change_password: true,
+    },
+  });
 
   if (error) {
     return NextResponse.json({ success: false, error: error.message }, { status: 500 });
   }
 
-  return NextResponse.json({ success: true, message: 'Contraseña actualizada.' });
+  return NextResponse.json({
+    success: true,
+    message: 'Contraseña temporal actualizada. El usuario deberá cambiarla al ingresar.',
+  });
 }
