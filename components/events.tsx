@@ -4,21 +4,39 @@ const EVENTS = [
   {
     name: 'Zero to Builder',
     city: 'Portoviejo',
+    location: 'PUCE Manabí · Campus Portoviejo',
+    description:
+      'Una edición centrada en construir en vivo: los asistentes crearon un agente de IA paso a paso y cerraron la jornada con una charla de un profesional de Oracle sobre su experiencia construyendo tecnología a gran escala.',
     accent: 'bg-lime',
   },
   {
     name: 'Zero to Builder',
     city: 'Manta',
+    location: 'PUCE Manabí · Campus Manta',
+    description:
+      'El primer encuentro de Kriuu reunió a builders de distintas universidades y niveles. La comunidad recorrió el stack de herramientas de IA que se usa para crear productos y siguió un proceso de construcción en vivo.',
     accent: 'bg-energy',
   },
   {
     name: 'OpenAI Buildathon',
     city: 'Portoviejo',
+    location: 'PUCE Manabí · Portoviejo',
+    description:
+      'Durante seis horas, los equipos convirtieron ideas en prototipos funcionales con Codex y presentaron sus demos ante un jurado. Kriuu apoyó la organización y la mentoría de los participantes durante el proceso.',
+    prizes:
+      'Premios: USD 5.000 para el primer lugar, USD 2.500 para el segundo y USD 1.000 para el tercero, en créditos para la API de OpenAI.',
     accent: 'bg-electric',
   },
   {
     name: 'OpenAI Buildathon',
     city: 'Manta',
+    location: 'PUCE Manabí · Campus Manta',
+    description:
+      'Una jornada intensiva de construcción con Codex en la que Kriuu participó con Bowin y alcanzó el tercer lugar del concurso, premiado con USD 1.000 en créditos para la API de OpenAI.',
+    prizes:
+      'Premios: USD 5.000 para el primer lugar, USD 2.500 para el segundo y USD 1.000 para el tercero, en créditos para la API de OpenAI.',
+    highlight:
+      'Es un coach escénico impulsado por IA: permite subir o grabar una presentación y entrega feedback sincronizado sobre la voz, el lenguaje corporal, la claridad del discurso y el dominio del tema.',
     accent: 'bg-olive',
   },
 ];
@@ -42,25 +60,37 @@ export default function Events() {
             Nos encontramos para hacer.
           </h2>
           <p className='max-w-xl text-[15px] leading-7 text-cream/65 md:justify-self-end'>
-            Eventos organizados por Kriuu para reunir a la comunidad de tecnología e IA,
-            aprender en conjunto y construir desde Manabí.
+            Encuentros organizados por Kriuu y espacios en los que participamos para reunir a la
+            comunidad de tecnología e IA, aprender en conjunto y construir desde Manabí.
           </p>
         </div>
 
-        <div className='mt-10 grid gap-px bg-cream/15 sm:grid-cols-2 lg:grid-cols-4'>
+        <div className='mt-10 grid gap-px bg-cream/15 md:grid-cols-2'>
           {EVENTS.map((event, index) => (
             <article
               key={`${event.name}-${event.city}`}
-              className='relative min-h-52 overflow-hidden bg-dark p-5'
+              className='relative min-h-80 overflow-hidden bg-dark p-6 md:p-8'
             >
               <span className={`absolute inset-x-0 top-0 h-1 ${event.accent}`} />
               <p className='text-xs font-medium uppercase tracking-[0.18em] text-cream/45'>
                 Evento {String(index + 1).padStart(2, '0')}
               </p>
-              <h3 className='mt-10 font-display text-3xl font-semibold leading-none'>{event.name}</h3>
-              <p className='mt-4 text-sm font-semibold uppercase tracking-[0.16em] text-cream/60'>
+              <h3 className='mt-10 font-display text-4xl font-semibold leading-none'>{event.name}</h3>
+              <p className='mt-3 text-sm font-semibold uppercase tracking-[0.16em] text-cream/60'>
                 {event.city} · Ecuador
               </p>
+              <p className='mt-2 text-xs font-medium uppercase tracking-[0.14em] text-cream/40'>
+                {event.location}
+              </p>
+              <p className='mt-6 text-sm leading-6 text-cream/68'>{event.description}</p>
+              {event.prizes ? (
+                <p className='mt-4 text-xs font-medium leading-5 text-cream/50'>{event.prizes}</p>
+              ) : null}
+              {event.highlight ? (
+                <p className='mt-5 border-l-2 border-lime pl-4 text-sm leading-6 text-cream/85'>
+                  <strong className='font-semibold text-cream'>Bowin.</strong> {event.highlight}
+                </p>
+              ) : null}
             </article>
           ))}
         </div>
