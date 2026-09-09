@@ -2,7 +2,8 @@
 
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { Check, Copy, X } from 'lucide-react';
+import { Check, Copy, Trash2, X } from 'lucide-react';
+import DestructiveConfirmation from '@/components/destructive-confirmation';
 import { Button } from '@/components/ui/button';
 
 export default function AdminApplicationActions({
@@ -54,6 +55,42 @@ export default function AdminApplicationActions({
       router.refresh();
     } catch (error) {
       setMessage(error instanceof Error ? error.message : 'No se pudo completar la acción.');
+    } finally {
+      setIsSubmitting(false);
+    }
+  }
+
+  async function deleteApplication() {
+    setMessage('');
+    setIsSubmitting(true);
+
+    try {
+      const response = await fetch(`/api/admin/applications/${applicationId}/delete`, {
+        method: 'POST',
+      });
+      const result = await response.json();
+
+      if (!response.ok || !result.success) {
+        throw new Error(result.error || 'No se pudo eliminar la postulación.');
+      }
+
+      const currentPath = `${window.location.pathname}${window.location.search}`;
+      const previousPath = sessionStorage.getItem('kriuu:previous-path');
+      let destination = '/admin/postulaciones';
+
+      if (
+        previousPath &&
+        previousPath.startsWith('/') &&
+        !previousPath.startsWith('//') &&
+        previousPath !== currentPath &&
+        !previousPath.startsWith(`/admin/postulaciones/${applicationId}`)
+      ) {
+        destination = previousPath;
+      }
+
+      router.replace(destination);
+    } catch (error) {
+      setMessage(error instanceof Error ? error.message : 'No se pudo eliminar la postulación.');
     } finally {
       setIsSubmitting(false);
     }
@@ -150,6 +187,20 @@ export default function AdminApplicationActions({
           </button>
         </div>
       ) : null}
+      <div className='border-t border-dark/10 pt-4'>
+        <DestructiveConfirmation
+          disabled={isSubmitting}
+          title='Eliminar postulación'
+          description='Esta acción elimina definitivamente la postulación y sus datos de revisión. Si ya se creó una cuenta para esta persona, la cuenta no será eliminada.'
+          confirmLabel='Eliminar postulación'
+          onConfirm={deleteApplication}
+        >
+          <span className='inline-flex min-h-11 items-center gap-2 bg-red-800 px-5 text-sm font-semibold text-white transition-opacity hover:opacity-90 aria-disabled:opacity-50'>
+            <Trash2 className='size-4' />
+            Eliminar postulación
+          </span>
+        </DestructiveConfirmation>
+      </div>
       {message ? <p className='text-sm leading-6 text-dark/70'>{message}</p> : null}
     </section>
   );

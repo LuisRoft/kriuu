@@ -6,6 +6,7 @@ import QueEsKriuu from '@/components/what-is-kriuu';
 import Manifiesto from '@/components/manifesto';
 import CodeOfConduct from '@/components/code-of-conduct';
 import LoQueHacemos from '@/components/what-we-do';
+import Events from '@/components/events';
 import Moments from '@/components/moments';
 import Directory from '@/components/directory';
 import SeoTopics from '@/components/seo-topics';
@@ -45,6 +46,7 @@ export default async function Home() {
         <Manifiesto />
         <CodeOfConduct />
         <LoQueHacemos />
+        <Events />
         <Moments />
         <Directory />
         <SeoTopics />

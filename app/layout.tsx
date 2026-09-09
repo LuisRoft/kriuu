@@ -100,6 +100,7 @@ export default function RootLayout({
               knowsAbout: [
                 'Tecnología',
                 'Inteligencia artificial',
+                'Comunidad de inteligencia artificial',
                 'Ética tecnológica',
                 'Comunidades tech',
                 'Desarrollo de software',

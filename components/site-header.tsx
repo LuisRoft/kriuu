@@ -10,6 +10,7 @@ import SignOutButton from '@/components/sign-out-button';
 const NAV_LINKS = [
   { href: '#manifiesto', label: 'Manifiesto' },
   { href: '#codigo-de-conducta', label: 'Código' },
+  { href: '#eventos', label: 'Eventos' },
   { href: '#team', label: 'Team' },
   { href: '/posts', label: 'Blog' },
   { href: '/login', label: 'Acceso' },

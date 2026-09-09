@@ -13,15 +13,20 @@ export default function BackButton({
   const router = useRouter();
 
   function goBack() {
-    const previousPath = sessionStorage.getItem('kriuu:previous-path');
-    const currentPath = `${window.location.pathname}${window.location.search}`;
+    const referrer = document.referrer;
 
-    if (previousPath && previousPath !== currentPath) {
-      router.push(previousPath);
-      return;
+    if (referrer) {
+      try {
+        if (new URL(referrer).origin === window.location.origin) {
+          router.back();
+          return;
+        }
+      } catch {
+        // A malformed referrer should use the explicit fallback below.
+      }
     }
 
-    router.push(fallbackHref);
+    router.replace(fallbackHref);
   }
 
   return (
